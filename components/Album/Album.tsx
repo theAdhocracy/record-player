@@ -1,7 +1,67 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Sluggify } from '../../utils/Sluggify'
 
-const Cover = styled.div`
+const Article = styled.article`
+	:focus,
+	& *:focus {
+		outline: none;
+	}
+
+	h2 {
+		margin: 0.75rem 0 0.2rem;
+		color: #3f3f3f;
+
+		span {
+			display: none;
+			font-size: 0.8em;
+		}
+
+		a:hover,
+		a:focus {
+			filter: brightness(1.8);
+
+			span {
+				display: inline;
+			}
+		}
+	}
+
+	h3 {
+		margin: 0.2rem 0;
+		font-weight: normal;
+		font-style: italic;
+		opacity: 0.6;
+
+		a {
+			color: blue;
+		}
+
+		a:hover,
+		a:focus {
+			filter: hue-rotate(45deg);
+		}
+	}
+
+	h2,
+	h3 {
+		margin-left: 0.5rem;
+	}
+
+	:hover,
+	:focus {
+		h2 span {
+			display: inline;
+		}
+	}
+
+	a:focus + h2 span {
+		display: inline;
+	}
+`
+
+const Cover = styled.a`
+	display: block;
 	position: relative;
 	height: 15rem;
 	width: 15rem;
@@ -25,7 +85,10 @@ const Cover = styled.div`
 		transition: transform 0.8s ease-in-out;
 	}
 
-	:hover {
+	:hover,
+	:focus {
+		filter: none;
+
 		img {
 			transform: translateX(-20%);
 			box-shadow: 20px 0 15px -15px rgba(0, 0, 0, 0.6);
@@ -51,9 +114,11 @@ const Vinyl = ({ cover, slug, trackCount, colour }: VinylProps) => {
 
 		for (let i = start; i <= end; i++) {
 			if (tracks.includes(i)) {
-				grooves.push(<stop offset={`${i}%`} stopColor={colour} />)
+				grooves.push(<stop offset={`${i}%`} stopColor={colour} key={`track-${i}`} />)
 			} else {
-				grooves.push(<stop offset={`${i}%`} stopColor={i % 2 === 0 ? light : lighter} />)
+				grooves.push(
+					<stop offset={`${i}%`} stopColor={i % 2 === 0 ? light : lighter} key={`groove-${i}`} />
+				)
 			}
 		}
 		return grooves
@@ -126,22 +191,40 @@ export const Album = ({ record }: AlbumTypes) => {
 		colour = '#f1f1f1'
 	}
 
+	// Create url
+	const url = `/${Sluggify(record.artist[0])}/${Sluggify(record.title)}`
+
 	return (
-		<article>
-			<Cover>
+		<Article>
+			<Cover href={url}>
 				<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
 				{record.medium === 'vinyl' && (
 					<Vinyl slug={record.slug} cover={record.cover.src} trackCount={aSide} colour={colour} />
 				)}
 			</Cover>
-			<h2>{record.title}</h2>
-			<h3>{record.artist}</h3>
-		</article>
+			<h2>
+				<a href={url}>
+					{record.title} <span>↬</span>
+				</a>
+			</h2>
+			<h3>
+				{record.artist.map((artist) => {
+					const slug = Sluggify(artist)
+
+					return (
+						<a key={slug} href={`/${slug}`}>
+							{artist}
+						</a>
+					)
+				})}
+			</h3>
+		</Article>
 	)
 }
 
 export type RecordAPI = {
 	id: number
+	uri: string
 	title: string
 	slug: string
 	date: string
