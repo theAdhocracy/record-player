@@ -13,15 +13,6 @@ const Cover = styled.div`
 		max-width: 100%;
 		transition: transform 0.8s ease-in-out, box-shadow 0.8s ease-in;
 		box-shadow: 6px 0 15px -12px rgba(0, 0, 0, 0.6);
-
-		:hover {
-			transform: translateX(-20%);
-			box-shadow: 20px 0 15px -15px rgba(0, 0, 0, 0.6);
-
-			& + svg {
-				transform: translateX(35%) rotate(45deg);
-			}
-		}
 	}
 
 	svg {
@@ -32,6 +23,17 @@ const Cover = styled.div`
 		width: 100%;
 		height: 100%;
 		transition: transform 0.8s ease-in-out;
+	}
+
+	:hover {
+		img {
+			transform: translateX(-20%);
+			box-shadow: 20px 0 15px -15px rgba(0, 0, 0, 0.6);
+		}
+
+		svg {
+			transform: translateX(35%) rotate(45deg);
+		}
 	}
 `
 
