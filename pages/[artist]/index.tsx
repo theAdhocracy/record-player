@@ -1,7 +1,17 @@
 import React from 'react'
+import styled from 'styled-components'
 import { useRouter } from 'next/router'
-import { RecordAPI } from '../../components/Album/Album'
-import Page from '../../components/Page/Page'
+import { RecordAPI } from '@components/Album/Album'
+import Page from '@components/Page/Page'
+
+const StyledPage = styled(Page)`
+	main {
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		border: 1px solid black;
+	}
+`
 
 export const ArtistPage = ({ artist, error }: { artist: ArtistAPI; error: boolean }) => {
 	const router = useRouter()
@@ -15,10 +25,10 @@ export const ArtistPage = ({ artist, error }: { artist: ArtistAPI; error: boolea
 	}
 
 	return (
-		<Page>
+		<StyledPage>
 			<h1>{artist.title}</h1>
 			<a href="/">Go Home</a>
-		</Page>
+		</StyledPage>
 	)
 }
 

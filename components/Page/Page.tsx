@@ -10,38 +10,25 @@ const Wrapper = styled.div`
 	main {
 		flex: 1;
 	}
-`
 
-const Main = styled.main`
-	display: grid;
-	grid-template-columns: repeat(5, 1fr);
-	grid-template-rows: min-content min-content 1fr;
-	gap: 1rem 6rem;
-	max-width: 100rem;
-	margin: 0 auto;
-
-	h1,
-	p {
-		grid-column: 1 / -1;
-		text-align: center;
-	}
-
-	h1 {
-		margin-bottom: 0;
-	}
-
-	p {
-		margin: 1rem 0 3rem;
+	header,
+	footer,
+	main {
+		width: 100%;
 	}
 `
 
-export const Page = ({ children }: { children: React.ReactNode }) => {
+export const Page = ({
+	children,
+	className
+}: {
+	children: React.ReactNode
+	className?: string
+}) => {
 	return (
-		<Wrapper>
+		<Wrapper className={className}>
 			<header>{/* Add nav and record image here */}</header>
-
-			<Main>{children}</Main>
-
+			<main>{children}</main>
 			<Footer />
 		</Wrapper>
 	)
