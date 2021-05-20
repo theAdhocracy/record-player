@@ -1,41 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
-import styled from 'styled-components'
 import { Album, RecordAPI } from '../components/Album/Album'
-import { Footer } from '../components/Footer/Footer'
-
-const Page = styled.div`
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
-
-	main {
-		flex: 1;
-	}
-`
-
-const Main = styled.main`
-	display: grid;
-	grid-template-columns: repeat(5, 1fr);
-	grid-template-rows: min-content min-content 1fr;
-	gap: 1rem 6rem;
-	max-width: 100rem;
-	margin: 0 auto;
-
-	h1,
-	p {
-		grid-column: 1 / -1;
-		text-align: center;
-	}
-
-	h1 {
-		margin-bottom: 0;
-	}
-
-	p {
-		margin: 1rem 0 3rem;
-	}
-`
+import Page from '../components/Page/Page'
 
 export default function Home({ records }: HomeTypes): JSX.Element {
 	return (
@@ -49,21 +15,14 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 				></link>
 			</Head>
 			<Page>
-				<header>{/* Add nav and record image here */}</header>
-
-				<Main>
-					<h1>Welcome to the Hall of Records</h1>
-					<p>
-						You've stumbled into the personal record collection of{' '}
-						<a href="https://theadhocracy.co.uk/">@theAdhocracy</a> – feel free to take a look
-						around!
-					</p>
-					{records.map((record) => {
-						return <Album key={record.id} record={record} />
-					})}
-				</Main>
-
-				<Footer />
+				<h1>Welcome to the Hall of Records</h1>
+				<p>
+					You've stumbled into the personal record collection of{' '}
+					<a href="https://theadhocracy.co.uk/">@theAdhocracy</a> – feel free to take a look around!
+				</p>
+				{records.map((record) => {
+					return <Album key={record.id} record={record} />
+				})}
 			</Page>
 		</>
 	)

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import { RecordAPI } from '../../components/Album/Album'
+import Page from '../../components/Page/Page'
 
 export const ArtistPage = ({ artist, error }: { artist: ArtistAPI; error: boolean }) => {
 	const router = useRouter()
@@ -14,10 +15,10 @@ export const ArtistPage = ({ artist, error }: { artist: ArtistAPI; error: boolea
 	}
 
 	return (
-		<>
+		<Page>
 			<h1>{artist.title}</h1>
 			<a href="/">Go Home</a>
-		</>
+		</Page>
 	)
 }
 
