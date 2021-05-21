@@ -1,6 +1,31 @@
 import React from 'react'
+import styled from 'styled-components'
 
-export const Vinyl = ({ cover, slug, trackCount, colour }: VinylProps) => {
+const SVG = styled.svg`
+	@media (prefers-reduced-motion: no-preference) {
+		& #platter {
+			animation: rotation 2.5s infinite linear;
+			animation-play-state: paused;
+			transform-origin: center;
+
+			&.rotate,
+			&:hover {
+				animation-play-state: running;
+			}
+		}
+	}
+
+	@keyframes rotation {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(359deg);
+		}
+	}
+`
+
+export const Vinyl = ({ cover, slug, trackCount, colour, isRotating = false }: VinylProps) => {
 	// Function: takes the start and end points, returns alternating concentric circles as a gradient; tracks value determines which should be black
 	const generateGrooves = (start: number, end: number, tracks: number[]) => {
 		const grooves = []
@@ -35,7 +60,7 @@ export const Vinyl = ({ cover, slug, trackCount, colour }: VinylProps) => {
 	const lighter = adjustColour(colour, 35)
 
 	return (
-		<svg viewBox="0 0 100 100">
+		<SVG viewBox="0 0 100 100">
 			<defs>
 				<radialGradient id="inner-gap" cx="0.5" cy="0.5" r="0.7" fx="0.6" fy="0.5">
 					<stop offset="0%" stopColor="white" />
@@ -60,22 +85,25 @@ export const Vinyl = ({ cover, slug, trackCount, colour }: VinylProps) => {
 					<image href={cover} x="32" y="32" height="36" width="36" />
 				</pattern>
 			</defs>
-			<circle cx="50" cy="50" r="45" fill={colour} />
-			{/* slug used to create a uid so that multiple can appear on same page */}
-			<circle cx="50" cy="50" r="41" fill={`url(#grooves-${slug})`} />
-			<circle cx="50" cy="50" r="21" fill={colour} />
-			{/* slug used to create a uid so that multiple can appear on same page */}
-			<circle cx="50" cy="50" r="18" fill={`url(#pattern-${slug})`} />
-			<circle cx="50" cy="50" r="4" fill="url(#inner-gap)" />
-		</svg>
+			<g id="platter" className={isRotating ? 'rotate' : undefined}>
+				<circle cx="50" cy="50" r="45" fill={colour} />
+				{/* slug used to create a uid so that multiple can appear on same page */}
+				<circle cx="50" cy="50" r="41" fill={`url(#grooves-${slug})`} />
+				<circle cx="50" cy="50" r="21" fill={colour} />
+				{/* slug used to create a uid so that multiple can appear on same page */}
+				<circle cx="50" cy="50" r="18" fill={`url(#pattern-${slug})`} />
+				<circle cx="50" cy="50" r="4" fill="url(#inner-gap)" />
+			</g>
+		</SVG>
 	)
 }
 
 export default Vinyl
 
-interface VinylProps {
+type VinylProps = {
 	cover: string
 	slug: string
 	trackCount: number
 	colour: string
+	isRotating?: boolean
 }

@@ -1,7 +1,25 @@
 import React from 'react'
+import styled from 'styled-components'
 import { useRouter } from 'next/router'
-import { RecordAPI } from '../../../components/Album/Album'
-import { Sluggify } from '../../../utils/Sluggify'
+import Vinyl from '@components/Vinyl/Vinyl'
+import Page from '@components/Page/Page'
+import { RecordAPI } from '@components/Album/Album'
+import { Sluggify } from '@utils/Sluggify'
+
+const StyledPage = styled(Page)`
+	main {
+		position: relative;
+		overflow: hidden;
+
+		svg {
+			position: absolute;
+			height: 100%;
+			right: 0;
+			top: 0;
+			transform: translateX(50%);
+		}
+	}
+`
 
 export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }) => {
 	const router = useRouter()
@@ -14,11 +32,24 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 		return <p>404</p>
 	}
 
+	// Work out tracks per side
+	let aSide = 1
+	if (album.medium === 'vinyl') {
+		aSide = album.tracks.filter((track) => track.side === 'A').length
+	}
+
 	return (
-		<>
+		<StyledPage>
 			<h1>{album.title}</h1>
 			<a href="/">Go Home</a>
-		</>
+			<Vinyl
+				isRotating={false}
+				cover={album.cover.src}
+				slug={album.slug}
+				trackCount={aSide}
+				colour={album.colour}
+			/>
+		</StyledPage>
 	)
 }
 
