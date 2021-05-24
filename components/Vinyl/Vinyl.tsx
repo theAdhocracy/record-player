@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { adjustColour } from '@utils/ColourAdjust'
 
 const SVG = styled.svg`
 	@media (prefers-reduced-motion: no-preference) {
@@ -40,19 +41,6 @@ export const Vinyl = ({ cover, slug, trackCount, colour, isRotating = false }: V
 			}
 		}
 		return grooves
-	}
-
-	// Function: takes a hex code and lightens or darkens it
-	// OG: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
-	const adjustColour = (colour: string, amount: number) => {
-		return (
-			'#' +
-			colour
-				.replace(/^#/, '')
-				.replace(/../g, (colour) =>
-					('0' + Math.min(255, Math.max(0, parseInt(colour, 16) + amount)).toString(16)).substr(-2)
-				)
-		)
 	}
 
 	// Groove colours
