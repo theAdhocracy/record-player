@@ -341,3 +341,7 @@ interface Track {
 	length: string
 	side: string
 }
+
+export const config = {
+	unstable_runtimeJS: false
+}

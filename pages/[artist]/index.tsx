@@ -94,3 +94,7 @@ export type ArtistAPI = {
 	slug: string
 	albums: RecordAPI[]
 }
+
+export const config = {
+	unstable_runtimeJS: false
+}
