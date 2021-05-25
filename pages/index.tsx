@@ -66,32 +66,22 @@ const StyledPage = styled(Page)`
 
 export default function Home({ records }: HomeTypes): JSX.Element {
 	return (
-		<>
-			<Head>
-				<title>Adhoc Records</title>
-				<meta name="description" content="Personal record collection and jukebox" />
-				<link
-					rel="icon"
-					href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💿</text></svg>"
-				></link>
-			</Head>
-			<StyledPage>
-				<h1>
-					<span>An ad hoc</span> Hall of Records
-				</h1>
-				<p>
-					<span className="dfn">
-						&#10100; <dfn title="discophilia">dis•co•phil•i•a</dfn> &#10101;
-					</span>{' '}
-					The enjoyment, collection, and study of musical recordings, often in the form of
-					phonograph records and/or CDs.
-				</p>
-				<p>
-					Or, to put it another way: <a href="https://theadhocracy.co.uk/">my</a> music collection.
-				</p>
-				<AlbumGrid albums={records} />
-			</StyledPage>
-		</>
+		<StyledPage>
+			<h1>
+				<span>An ad hoc</span> Hall of Records
+			</h1>
+			<p>
+				<span className="dfn">
+					&#10100; <dfn title="discophilia">dis•co•phil•i•a</dfn> &#10101;
+				</span>{' '}
+				The enjoyment, collection, and study of musical recordings, often in the form of phonograph
+				records and/or CDs.
+			</p>
+			<p>
+				Or, to put it another way: <a href="https://theadhocracy.co.uk/">my</a> music collection.
+			</p>
+			<AlbumGrid albums={records} />
+		</StyledPage>
 	)
 }
 
@@ -109,4 +99,8 @@ export async function getStaticProps() {
 			records: records.data
 		}
 	}
+}
+
+export const config = {
+	unstable_runtimeJS: false
 }
