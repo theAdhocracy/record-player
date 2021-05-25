@@ -34,6 +34,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 		gap: 1rem;
 		margin-bottom: calc(50vw - 130px); // 130px is min height of footer
 		margin-top: 2rem;
+		width: 100%;
 	}
 
 	button {
@@ -41,8 +42,8 @@ const StyledPage = styled(Page)<{ colour: string }>`
 		align-self: start;
 		justify-self: end;
 		padding: 0.4rem 0.7rem;
-		background-color: ${({ colour }) => (colour !== '#000000' ? colour : '#354797')};
-		border: 2px solid ${({ colour }) => (colour !== '#000000' ? colour : '#354797')};
+		background-color: ${({ colour }) => colour};
+		border: 2px solid ${({ colour }) => colour};
 		border-radius: 4px;
 		color: #ffffff;
 		line-height: 1;
@@ -89,7 +90,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 			button {
 				grid-column: 2;
 				grid-row: 2;
-				margin-top: 1.5rem;
+				margin-top: 2rem;
 			}
 
 			section {
@@ -141,7 +142,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 			section {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 2rem clamp(2rem, 1vw + 2.1rem, 5rem); //NB: not working
+				gap: 2rem clamp(2rem, 6rem, 10rem);
 				justify-self: end;
 				align-self: center;
 				height: max-content;
@@ -162,6 +163,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 const Tracklist = styled.table<{ colour: string }>`
 	width: 95%;
 	height: max-content;
+	max-width: 22rem;
 
 	h3 {
 		margin: 0 0 1rem;
@@ -187,8 +189,6 @@ const Tracklist = styled.table<{ colour: string }>`
 	}
 
 	@media screen and (min-width: 600px) {
-		max-width: 22rem;
-
 		td:nth-of-type(2) {
 			padding-right: 1.5rem;
 		}

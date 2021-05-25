@@ -3,13 +3,33 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { RecordAPI } from '@components/Album/Album'
 import Page from '@components/Page/Page'
+import { AlbumGrid } from '@components/AlbumGrid/AlbumGrid'
+import { adjustColour } from '@utils/ColourAdjust'
 
-const StyledPage = styled(Page)`
+const StyledPage = styled(Page)<{ colour: string }>`
 	main {
-		width: 100%;
-		max-width: 100%;
-		margin: 0;
-		border: 1px solid black;
+		max-width: 110rem;
+		margin: 0 auto;
+		padding: 0 1rem;
+
+		h1 {
+			margin-bottom: 3rem;
+			margin-top: 3rem;
+			text-align: center;
+			font-size: 4rem;
+			filter: drop-shadow(-8px -5px ${({ colour }) => adjustColour(colour, 70)})
+				drop-shadow(8px 5px ${({ colour }) => adjustColour(colour, 120)});
+		}
+
+		@media screen and (min-width: 600px) {
+			padding: 0 5rem;
+
+			h1 {
+				font-size: clamp(4rem, 6rem, 8rem);
+				line-height: 0.9;
+				margin-bottom: 6rem;
+			}
+		}
 	}
 `
 
@@ -24,10 +44,12 @@ export const ArtistPage = ({ artist, error }: { artist: ArtistAPI; error: boolea
 		return <p>404</p>
 	}
 
+	const accent = artist.albums[0].colour === '#000000' ? '#354797' : artist.albums[0].colour
+
 	return (
-		<StyledPage>
+		<StyledPage colour={accent}>
 			<h1>{artist.title}</h1>
-			<a href="/">Go Home</a>
+			<AlbumGrid albums={artist.albums} />
 		</StyledPage>
 	)
 }
