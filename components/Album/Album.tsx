@@ -3,7 +3,9 @@ import styled from 'styled-components'
 import { Sluggify } from '../../utils/Sluggify'
 import { Vinyl } from '../Vinyl/Vinyl'
 
-const Article = styled.article`
+const Article = styled.article<{ colour: string }>`
+	justify-self: center;
+
 	:focus,
 	& *:focus {
 		outline: none;
@@ -35,7 +37,7 @@ const Article = styled.article`
 		opacity: 0.6;
 
 		a {
-			color: blue;
+			color: #354797;
 		}
 
 		a:hover,
@@ -46,7 +48,8 @@ const Article = styled.article`
 
 	h2,
 	h3 {
-		margin-left: 0.5rem;
+		padding-left: 0.6rem;
+		padding-right: 0.6rem;
 	}
 
 	:hover,
@@ -66,6 +69,7 @@ const Cover = styled.a`
 	position: relative;
 	height: 15rem;
 	width: 15rem;
+	margin: 0 auto;
 
 	img {
 		z-index: 1;
@@ -114,11 +118,14 @@ export const Album = ({ record }: AlbumTypes) => {
 		colour = '#f1f1f1'
 	}
 
+	// Create accent colour
+	const accent = colour === '#000000' ? '#354797' : colour
+
 	// Create url
 	const url = `/${Sluggify(record.artist[0])}/${Sluggify(record.title)}`
 
 	return (
-		<Article>
+		<Article colour={accent}>
 			<Cover href={url}>
 				<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
 				{record.medium === 'vinyl' && (
