@@ -4,7 +4,7 @@ import { adjustColour } from '@utils/ColourAdjust'
 
 const SVG = styled.svg`
 	@media (prefers-reduced-motion: no-preference) {
-		& #platter {
+		& .platter {
 			animation: rotation 2.5s infinite linear;
 			animation-play-state: paused;
 			transform-origin: center;
@@ -73,7 +73,7 @@ export const Vinyl = ({ cover, slug, trackCount, colour, isRotating = false }: V
 					<image href={cover} x="32" y="32" height="36" width="36" />
 				</pattern>
 			</defs>
-			<g id="platter" className={isRotating ? 'rotate' : undefined}>
+			<g className={isRotating ? 'platter rotate' : 'platter'}>
 				<circle cx="50" cy="50" r="45" fill={colour} />
 				{/* slug used to create a uid so that multiple can appear on same page */}
 				<circle cx="50" cy="50" r="41" fill={`url(#grooves-${slug})`} />

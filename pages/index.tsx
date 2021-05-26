@@ -1,5 +1,4 @@
 import React from 'react'
-import Head from 'next/head'
 import styled from 'styled-components'
 import { RecordAPI } from '../components/Album/Album'
 import Page from '../components/Page/Page'

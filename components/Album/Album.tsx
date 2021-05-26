@@ -65,6 +65,25 @@ const Article = styled.article<{ colour: string }>`
 `
 
 const Cover = styled.a`
+	/* Hide on variant based on touch input or not */
+	&#mobile-cover {
+		display: block;
+	}
+
+	&#desktop-cover {
+		display: none;
+	}
+
+	@media (hover: hover) {
+		&#mobile-cover {
+			display: none;
+		}
+
+		&#desktop-cover {
+			display: block;
+		}
+	}
+
 	display: block;
 	position: relative;
 	height: 15rem;
@@ -72,7 +91,6 @@ const Cover = styled.a`
 	margin: 0 auto;
 
 	img {
-		z-index: 1;
 		border: 8px solid #ececec;
 		border-radius: 12px;
 		max-width: 100%;
@@ -126,10 +144,26 @@ export const Album = ({ record }: AlbumTypes) => {
 
 	return (
 		<Article colour={accent}>
-			<Cover href={url}>
+			<Cover href={url} id="desktop-cover" key="desktop-cover">
 				<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
 				{record.medium === 'vinyl' && (
-					<Vinyl slug={record.slug} cover={record.cover.src} trackCount={aSide} colour={colour} />
+					<Vinyl
+						slug={`${record.slug}-desktop`}
+						cover={record.cover.src}
+						trackCount={aSide}
+						colour={colour}
+					/>
+				)}
+			</Cover>
+			<Cover as="div" id="mobile-cover" key="mobile-cover">
+				<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
+				{record.medium === 'vinyl' && (
+					<Vinyl
+						slug={`${record.slug}-mobile`}
+						cover={record.cover.src}
+						trackCount={aSide}
+						colour={colour}
+					/>
 				)}
 			</Cover>
 			<h2>
