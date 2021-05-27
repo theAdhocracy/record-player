@@ -17,7 +17,15 @@ const Article = styled.article<{ colour: string }>`
 
 		span {
 			display: none;
+			position: relative;
 			font-size: 0.8em;
+		}
+
+		span::after {
+			content: '↬';
+			position: absolute;
+			right: -1.2rem;
+			color: #354797;
 		}
 
 		a:hover,
@@ -65,7 +73,7 @@ const Article = styled.article<{ colour: string }>`
 `
 
 const Cover = styled.a`
-	/* Hide on variant based on touch input or not */
+	/* Hide one variant based on input mode */
 	&#mobile-cover {
 		display: block;
 	}
@@ -74,7 +82,7 @@ const Cover = styled.a`
 		display: none;
 	}
 
-	@media (hover: hover) {
+	@media (any-hover: hover) {
 		&#mobile-cover {
 			display: none;
 		}
@@ -168,7 +176,8 @@ export const Album = ({ record }: AlbumTypes) => {
 			</Cover>
 			<h2>
 				<a href={url}>
-					{record.title} <span>↬</span>
+					{record.title}
+					<span>&#8203;</span> {/* zero width space to hook ::after on */}
 				</a>
 			</h2>
 			<h3>
