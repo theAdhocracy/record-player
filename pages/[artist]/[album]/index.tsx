@@ -210,7 +210,7 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 
 	// Work out tracks per side
 	let aSide = 1
-	if (album.medium === 'vinyl') {
+	if (album.details.vinyl) {
 		aSide = album.tracks.filter((track) => track.side === 'A').length
 	}
 

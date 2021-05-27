@@ -134,7 +134,7 @@ const Cover = styled.a`
 export const Album = ({ record }: AlbumTypes) => {
 	// Work out number of tracks on A side if vinyl
 	let aSide = 1
-	if (record.medium === 'vinyl') {
+	if (record.details.vinyl) {
 		aSide = record.tracks.filter((track) => track.side === 'A').length
 	}
 
@@ -154,7 +154,7 @@ export const Album = ({ record }: AlbumTypes) => {
 		<Article colour={accent}>
 			<Cover href={url} id="desktop-cover" key="desktop-cover">
 				<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
-				{record.medium === 'vinyl' && (
+				{record.details.vinyl && (
 					<Vinyl
 						slug={`${record.slug}-desktop`}
 						cover={record.cover.src}
@@ -165,7 +165,7 @@ export const Album = ({ record }: AlbumTypes) => {
 			</Cover>
 			<Cover as="div" id="mobile-cover" key="mobile-cover">
 				<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
-				{record.medium === 'vinyl' && (
+				{record.details.vinyl && (
 					<Vinyl
 						slug={`${record.slug}-mobile`}
 						cover={record.cover.src}
@@ -203,7 +203,9 @@ export type RecordAPI = {
 	date: string
 	updated: string
 	artist: string[]
-	medium: 'vinyl' | 'cd' | 'wanted'
+	details: {
+		[key: string]: boolean
+	}
 	colour: string
 	notes: string
 	cover: {
