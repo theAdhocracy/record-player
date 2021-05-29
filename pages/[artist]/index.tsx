@@ -46,10 +46,13 @@ export const ArtistPage = ({ artist, error }: { artist: ArtistAPI; error: boolea
 
 	const accent = artist.albums[0].colour === '#000000' ? '#354797' : artist.albums[0].colour
 
+	// Combine albums and featured albums
+	const allAlbums = artist.albums.concat(artist.featured)
+
 	return (
 		<StyledPage colour={accent}>
 			<h1>{artist.title}</h1>
-			<AlbumGrid albums={artist.albums} />
+			<AlbumGrid albums={allAlbums} />
 		</StyledPage>
 	)
 }
@@ -79,6 +82,13 @@ export async function getStaticProps({ params }: { params: { artist: string } })
 	const res = await fetch(`https://cms.theadhocracy.co.uk/artist/${params.artist}.json`)
 	const artist = await res.json()
 
+	// 404 artists that only feature on albums
+	if (artist.albums.length === 0) {
+		return {
+			props: { error: true }
+		}
+	}
+
 	return {
 		props: {
 			artist: artist,
@@ -93,6 +103,7 @@ export type ArtistAPI = {
 	title: string
 	slug: string
 	albums: RecordAPI[]
+	featured: RecordAPI[]
 }
 
 export const config = {

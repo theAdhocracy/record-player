@@ -54,24 +54,26 @@ const StyledPage = styled(Page)<{ colour: string }>`
 		}
 	}
 
-	@media screen and (min-width: 600px) {
+	@media screen and (min-width: 620px) {
 		main {
 			position: relative;
 			overflow: hidden;
-
 			display: grid;
 			grid-template-columns: 12vh 1fr;
 			grid-template-rows: max-content min-content 1fr;
 			gap: 1rem;
 			max-width: unset;
 			margin: 0;
-			padding: 0 5rem 0 0;
 
 			h1 {
+				grid-column: 1 / -1;
+				grid-row: 1;
 				align-self: start;
-				margin: 0 0 0 8vh;
-				padding-top: 2rem;
-				font-size: 8rem;
+				justify-self: end;
+				max-width: 8em;
+				margin: 0;
+				padding: 2rem 1rem 0;
+				font-size: 7rem;
 				line-height: 0.9;
 				text-align: right;
 			}
@@ -90,7 +92,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 			button {
 				grid-column: 2;
 				grid-row: 2;
-				margin-top: 2rem;
+				margin: 2rem 1rem 0;
 			}
 
 			section {
@@ -106,8 +108,28 @@ const StyledPage = styled(Page)<{ colour: string }>`
 
 	@media screen and (min-width: 1000px) {
 		main {
+			h1 {
+				margin-right: 10%;
+			}
+
+			button {
+				margin-right: 13%;
+			}
+		}
+	}
+
+	@media screen and (min-width: 1200px) {
+		main {
 			grid-template-columns: 15vh 1fr 55vh;
 			padding: 0;
+
+			h1 {
+				grid-column: auto;
+				min-width: 5.5em;
+				font-size: 8rem;
+				margin-right: 0;
+				padding-right: 0;
+			}
 
 			svg:not(#artist) {
 				position: relative;
@@ -123,6 +145,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 			button {
 				grid-column: 2;
 				grid-row: 2;
+				margin-right: 0;
 			}
 
 			section {
@@ -172,6 +195,26 @@ const Tracklist = styled.table<{ colour: string }>`
 
 	td {
 		vertical-align: baseline;
+
+		span,
+		a {
+			display: block;
+			margin-bottom: 0.2em;
+			font-size: 0.8em;
+			font-style: italic;
+			opacity: 0.5;
+		}
+
+		a:hover,
+		a:focus {
+			opacity: 1;
+			color: #354797;
+			outline: none;
+
+			::after {
+				content: '↬';
+			}
+		}
 	}
 
 	td:nth-of-type(1) {
@@ -274,7 +317,21 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 										<>
 											<tr key={track.number}>
 												<td>#{track.number}</td>
-												<td>{track.name}</td>
+												<td>
+													{track.name}
+													{/* Featured artist */}
+													{track.features && album.artist[0] !== 'Soundtrack' && (
+														<span>{` feat. ${track.features}`}</span>
+													)}
+													{/* Compilation/soundtrack artist w/ link */}
+													{track.features && album.artist[0] === 'Soundtrack' && track.link && (
+														<a href={`/${Sluggify(track.features)}`}>{` ${track.features}`}</a>
+													)}
+													{/* Compilation/soundtrack artist w/o link */}
+													{track.features && album.artist[0] === 'Soundtrack' && !track.link && (
+														<span>{` ${track.features}`}</span>
+													)}
+												</td>
 												<td>
 													<time dateTime={`PT${duration.minute}M${duration.second}S`}>
 														{track.length}
@@ -335,11 +392,13 @@ interface Side {
 	tracks: Track[]
 }
 
-interface Track {
+export type Track = {
 	number: number
 	name: string
 	length: string
 	side: string
+	features: string
+	link: boolean
 }
 
 export const config = {

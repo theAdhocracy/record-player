@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { RecordAPI } from '../components/Album/Album'
-import Page from '../components/Page/Page'
+import { RecordAPI } from '@components/Album/Album'
+import Page from '@components/Page/Page'
 import { adjustColour } from '@utils/ColourAdjust'
 import { AlbumGrid } from '@components/AlbumGrid/AlbumGrid'
 

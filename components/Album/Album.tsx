@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Track } from 'pages/[artist]/[album]'
 import { Sluggify } from '../../utils/Sluggify'
 import { Vinyl } from '../Vinyl/Vinyl'
 
@@ -212,12 +213,7 @@ export type RecordAPI = {
 		src: string
 		desc: string
 	}
-	tracks: {
-		number: number
-		name: string
-		length: string
-		side: string
-	}[]
+	tracks: Track[]
 }
 
 export type AlbumTypes = {
