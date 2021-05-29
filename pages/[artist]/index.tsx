@@ -5,6 +5,8 @@ import { RecordAPI } from '@components/Album/Album'
 import Page from '@components/Page/Page'
 import { AlbumGrid } from '@components/AlbumGrid/AlbumGrid'
 import { adjustColour } from '@utils/ColourAdjust'
+import Loading from '@components/Loading/Loading'
+import Error404 from '@components/404/404'
 
 const StyledPage = styled(Page)<{ colour: string }>`
 	main {
@@ -37,11 +39,11 @@ export const ArtistPage = ({ artist, error }: { artist: ArtistAPI; error: boolea
 	const router = useRouter()
 
 	if (router.isFallback) {
-		return <div>Loading...</div>
+		return <Loading />
 	}
 
 	if (error) {
-		return <p>404</p>
+		return <Error404 />
 	}
 
 	const accent = artist.albums[0].colour === '#000000' ? '#354797' : artist.albums[0].colour
@@ -83,7 +85,7 @@ export async function getStaticProps({ params }: { params: { artist: string } })
 	const artist = await res.json()
 
 	// 404 artists that only feature on albums
-	if (artist.albums.length === 0) {
+	if (artist.albums?.length === 0) {
 		return {
 			props: { error: true }
 		}

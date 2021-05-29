@@ -6,6 +6,8 @@ import Page from '@components/Page/Page'
 import { RecordAPI } from '@components/Album/Album'
 import { Sluggify } from '@utils/Sluggify'
 import { adjustColour } from '@utils/ColourAdjust'
+import Error404 from '@components/404/404'
+import Loading from '@components/Loading/Loading'
 
 const StyledPage = styled(Page)<{ colour: string }>`
 	main {
@@ -242,13 +244,11 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 	const router = useRouter()
 
 	if (router.isFallback) {
-		// TODO: Make a simple loading animation and explanation message
-		return <div>Loading...</div>
+		return <Loading />
 	}
 
 	if (error) {
-		// TODO: Quirky 404 page
-		return <p>404</p>
+		return <Error404 />
 	}
 
 	// Work out tracks per side
