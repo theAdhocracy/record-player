@@ -9,22 +9,25 @@ My personal music collection, now in a digital flavour.
 - Create main header image
 - Consider microformats feed
 - Scrobble button
-- Display other albums by an artist on the artist page
+- ✅ Display other albums by an artist on the artist page
 - Record needle (?)
 - Desired page
 - Create CD image
 - Add iconography for other tags (next to button?)
-- 404 page
-- Loading page
+- ✅ 404 page
+- ✅ Loading page
 - Image optimisations
+  - Maybe serve webp if able
 - Pagination for home page
 - Lazy loading
-- Sort by artist
-- Sort by switches (artist or date purchased)
+- ✅ Sort by artist
+- ✅ Sort by switches (artist or date purchased)
+- Abstract `sort by` functionality into web component so that React can be removed from page
 - Highlight most recent somehow
   - Could use a combination of `grid-column: span 2` to make them visually larger and then `grid-auto-flow: dense` to fill the gaps
   - Or leave the gaps and work out some way to fill them, maybe with music notes?
 - Auto colour contrast record colours
+- Fix build to stop unwanted artist pages being rendered (`getStaticPaths`)
 
 ## Future
 

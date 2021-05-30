@@ -4,6 +4,7 @@ import { RecordAPI } from '@components/Album/Album'
 import Page from '@components/Page/Page'
 import { adjustColour } from '@utils/ColourAdjust'
 import { AlbumGrid } from '@components/AlbumGrid/AlbumGrid'
+import Toggle from '@components/Toggle/Toggle'
 
 const StyledPage = styled(Page)`
 	main {
@@ -41,6 +42,10 @@ const StyledPage = styled(Page)`
 		p {
 			margin: 1rem 0 3rem;
 
+			:last-of-type {
+				margin-bottom: 2rem;
+			}
+
 			a {
 				font-weight: bold;
 				text-underline-position: auto;
@@ -64,6 +69,36 @@ const StyledPage = styled(Page)`
 `
 
 export default function Home({ records }: HomeTypes): JSX.Element {
+	const [sortValue, setSortValue] = React.useState('alpha')
+
+	// Possible sort methods
+	const dateSort = (album1: RecordAPI, album2: RecordAPI) => {
+		if (album1.date < album2.date) return 1
+		if (album1.date > album2.date) return -1
+		return 0
+	}
+
+	const alphaSort = (album1: RecordAPI, album2: RecordAPI) => {
+		// First sort by artist name
+		if (album1.artist[0] < album2.artist[0]) return -1
+		if (album1.artist[0] > album2.artist[0]) return 1
+
+		// Then by album title
+		if (album1.title < album2.title) return -1
+		if (album1.title > album2.title) return 1
+
+		// Otherwise it's where it should be
+		return 0
+	}
+
+	React.useEffect(() => {
+		records.sort(alphaSort)
+	}, [])
+
+	React.useEffect(() => {
+		sortValue === 'alpha' ? records.sort(alphaSort) : records.sort(dateSort)
+	}, [sortValue])
+
 	return (
 		<StyledPage>
 			<h1>
@@ -79,6 +114,8 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 			<p>
 				Or, to put it another way: <a href="https://theadhocracy.co.uk/">my</a> music collection.
 			</p>
+
+			<Toggle onChange={() => setSortValue(sortValue === 'alpha' ? 'date' : 'alpha')} />
 			<AlbumGrid albums={records} />
 		</StyledPage>
 	)
@@ -98,8 +135,4 @@ export async function getStaticProps() {
 			records: records.data
 		}
 	}
-}
-
-export const config = {
-	unstable_runtimeJS: false
 }
