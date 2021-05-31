@@ -70,6 +70,7 @@ const StyledPage = styled(Page)`
 
 export default function Home({ records }: HomeTypes): JSX.Element {
 	const [sortValue, setSortValue] = React.useState('alpha')
+	const [jsOnly, setJsOnly] = React.useState(false)
 
 	// Local storage
 	const store = (value: string) => {
@@ -97,8 +98,12 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 	}
 
 	React.useLayoutEffect(() => {
+		// Sort order
 		const sort = localStorage.getItem('sort')
 		if (sort === 'date') setSortValue('date')
+
+		// Toggle switch
+		setJsOnly(true)
 	}, [])
 
 	return (
@@ -116,13 +121,14 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 			<p>
 				Or, to put it another way: <a href="https://theadhocracy.co.uk/">my</a> music collection.
 			</p>
-
-			<Toggle
-				onChange={() => {
-					setSortValue(sortValue === 'alpha' ? 'date' : 'alpha')
-					store(sortValue === 'alpha' ? 'date' : 'alpha')
-				}}
-			/>
+			{jsOnly && (
+				<Toggle
+					onChange={() => {
+						setSortValue(sortValue === 'alpha' ? 'date' : 'alpha')
+						store(sortValue === 'alpha' ? 'date' : 'alpha')
+					}}
+				/>
+			)}
 			<AlbumGrid
 				albums={sortValue === 'alpha' ? records.sort(alphaSort) : records.sort(dateSort)}
 			/>
