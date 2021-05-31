@@ -28,6 +28,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 		left: 0;
 		bottom: -50vw;
 		width: 100vw;
+		z-index: 1;
 	}
 
 	section {
@@ -179,7 +180,12 @@ const StyledPage = styled(Page)<{ colour: string }>`
 	@media screen and (min-width: 1750px) {
 		main {
 			section {
-				gap: 5rem 10rem;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(23rem, max-content));
+				justify-content: end;
+				justify-items: end;
+				gap: 5rem;
+				max-width: 80rem;
 			}
 		}
 	}
@@ -367,7 +373,7 @@ export async function getStaticPaths() {
 
 	return {
 		paths,
-		fallback: true
+		fallback: 'blocking'
 	}
 }
 
