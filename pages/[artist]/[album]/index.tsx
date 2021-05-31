@@ -204,8 +204,7 @@ const Tracklist = styled.table<{ colour: string }>`
 	td {
 		vertical-align: baseline;
 
-		span,
-		a {
+		span {
 			display: block;
 			margin-bottom: 0.2em;
 			font-size: 0.8em;
@@ -319,6 +318,10 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 										minute: track.length.replace(/:.*$/, ''),
 										second: track.length.replace(/^.*:/, '')
 									}
+									const featuredArtists = track.features?.split(' | ')
+
+									const featuredString = album.artist[0] !== 'Soundtrack' ? 'feat. ' : ''
+									// console.log(featuredArtists.join(', '))
 									return (
 										<>
 											<tr key={track.number}>
@@ -326,16 +329,23 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 												<td>
 													{track.name}
 													{/* Featured artist */}
-													{track.features && album.artist[0] !== 'Soundtrack' && (
-														<span>{` feat. ${track.features}`}</span>
-													)}
-													{/* Compilation/soundtrack artist w/ link */}
-													{track.features && album.artist[0] === 'Soundtrack' && track.link && (
-														<a href={`/${Sluggify(track.features)}`}>{` ${track.features}`}</a>
-													)}
-													{/* Compilation/soundtrack artist w/o link */}
-													{track.features && album.artist[0] === 'Soundtrack' && !track.link && (
-														<span>{` ${track.features}`}</span>
+													{track.features && (
+														<span>
+															{featuredString}
+															{featuredArtists.map((artist, index) =>
+																track.link ? (
+																	<a href={`/${Sluggify(artist)}`}>{` ${artist}`}</a>
+																) : (
+																	`${artist}${
+																		index + 1 < featuredArtists.length
+																			? index + 1 < featuredArtists.length - 1
+																				? ', '
+																				: ' & '
+																			: ''
+																	}`
+																)
+															)}
+														</span>
 													)}
 												</td>
 												<td>
