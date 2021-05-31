@@ -105,7 +105,13 @@ const Wrapper = styled.label`
 `
 
 export const Toggle = ({ onChange }: ToggleTypes) => {
-	const [toggle, setToggle] = React.useState(false)
+	const [toggle, setToggle] = React.useState(true)
+
+	// Set toggle position based on localstorage sort value
+	React.useLayoutEffect(() => {
+		const sort = localStorage.getItem('sort')
+		if (sort === 'date') setToggle(false)
+	}, [])
 
 	return (
 		<Wrapper htmlFor="sort-toggle" className={toggle ? 'left' : 'right'}>

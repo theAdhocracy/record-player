@@ -71,6 +71,11 @@ const StyledPage = styled(Page)`
 export default function Home({ records }: HomeTypes): JSX.Element {
 	const [sortValue, setSortValue] = React.useState('alpha')
 
+	// Local storage
+	const store = (value: string) => {
+		localStorage.setItem('sort', value)
+	}
+
 	// Possible sort methods
 	const dateSort = (album1: RecordAPI, album2: RecordAPI) => {
 		if (album1.date < album2.date) return 1
@@ -91,13 +96,10 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 		return 0
 	}
 
-	React.useEffect(() => {
-		records.sort(alphaSort)
+	React.useLayoutEffect(() => {
+		const sort = localStorage.getItem('sort')
+		if (sort === 'date') setSortValue('date')
 	}, [])
-
-	React.useEffect(() => {
-		sortValue === 'alpha' ? records.sort(alphaSort) : records.sort(dateSort)
-	}, [sortValue])
 
 	return (
 		<StyledPage>
@@ -115,8 +117,15 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 				Or, to put it another way: <a href="https://theadhocracy.co.uk/">my</a> music collection.
 			</p>
 
-			<Toggle onChange={() => setSortValue(sortValue === 'alpha' ? 'date' : 'alpha')} />
-			<AlbumGrid albums={records} />
+			<Toggle
+				onChange={() => {
+					setSortValue(sortValue === 'alpha' ? 'date' : 'alpha')
+					store(sortValue === 'alpha' ? 'date' : 'alpha')
+				}}
+			/>
+			<AlbumGrid
+				albums={sortValue === 'alpha' ? records.sort(alphaSort) : records.sort(dateSort)}
+			/>
 		</StyledPage>
 	)
 }
