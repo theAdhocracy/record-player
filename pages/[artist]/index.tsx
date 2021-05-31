@@ -64,10 +64,13 @@ export default ArtistPage
 export async function getStaticPaths() {
 	// Fetch records
 	const res = await fetch('https://cms.theadhocracy.co.uk/artists.json')
-	const artists = await res.json()
+	let artists = await res.json()
+
+	// Remove artists that don't have albums (featured artists only)
+	artists = artists.data.filter((artist: any) => artist.albums?.length > 0)
 
 	// Required pages
-	const paths = artists.data.map((artist: RecordAPI) => ({
+	const paths = artists.map((artist: RecordAPI) => ({
 		params: {
 			artist: artist.slug
 		}
@@ -75,7 +78,7 @@ export async function getStaticPaths() {
 
 	return {
 		paths,
-		fallback: true
+		fallback: 'blocking'
 	}
 }
 
