@@ -84,7 +84,8 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: { params: { artist: string } }) {
 	// Fetch records
-	const res = await fetch(`https://cms.theadhocracy.co.uk/artist/${params.artist}.json`)
+	const url = encodeURIComponent(params.artist) // allows for special chars
+	const res = await fetch(`https://cms.theadhocracy.co.uk/artist/${url}.json`)
 	const artist = await res.json()
 
 	// 404 artists that only feature on albums

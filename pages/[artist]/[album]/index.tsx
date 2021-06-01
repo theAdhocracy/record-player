@@ -376,7 +376,7 @@ export async function getStaticPaths() {
 	// Required pages
 	const paths = records.data.map((record: RecordAPI) => ({
 		params: {
-			album: Sluggify(record.title),
+			album: record.slug,
 			artist: Sluggify(record.artist[0])
 		}
 	}))
@@ -389,9 +389,8 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: { params: { album: string; artist: string } }) {
 	// Fetch records
-	const res = await fetch(
-		`https://cms.theadhocracy.co.uk/album/${params.artist}-${params.album}.json`
-	)
+	const url = encodeURIComponent(`${params.artist}-${params.album}.json`) // allows for special chars
+	const res = await fetch(`https://cms.theadhocracy.co.uk/album/${url}`)
 	const album = await res.json()
 
 	return {

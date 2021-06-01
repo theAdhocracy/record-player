@@ -149,7 +149,7 @@ export const Album = ({ record }: AlbumTypes) => {
 	const accent = colour === '#000000' ? '#354797' : colour
 
 	// Create url
-	const url = `/${Sluggify(record.artist[0])}/${Sluggify(record.title)}`
+	const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 
 	return (
 		<Article colour={accent}>
