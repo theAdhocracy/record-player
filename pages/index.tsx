@@ -85,9 +85,13 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 	}
 
 	const alphaSort = (album1: RecordAPI, album2: RecordAPI) => {
+		// Remove "the" from artist name
+		const artist1 = album1.artist[0].replace(/^the /i, '')
+		const artist2 = album2.artist[0].replace(/^the /i, '')
+
 		// First sort by artist name
-		if (album1.artist[0] < album2.artist[0]) return -1
-		if (album1.artist[0] > album2.artist[0]) return 1
+		if (artist1 < artist2) return -1
+		if (artist1 > artist2) return 1
 
 		// Then by album title
 		if (album1.title < album2.title) return -1
@@ -119,7 +123,11 @@ export default function Home({ records }: HomeTypes): JSX.Element {
 				records and/or CDs.
 			</p>
 			<p>
-				Or, to put it another way: <a href="https://theadhocracy.co.uk/">my</a> music collection.
+				Or, to put it another way:{' '}
+				<a href="https://theadhocracy.co.uk/" className="h-card">
+					my
+				</a>{' '}
+				music collection.
 			</p>
 			{jsOnly && (
 				<Toggle
