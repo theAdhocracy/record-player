@@ -7,6 +7,7 @@ My personal music collection, now in a digital flavour.
 - Generate splatter effect for records
 - Add `h-card` to link
 - Create main header image
+  - Will need a smaller version (simplified) for nav?
 - Consider microformats feed
 - Scrobble button
 - Record needle (?)
@@ -25,6 +26,7 @@ My personal music collection, now in a digital flavour.
 - Allow people to like specific albums/artists
 - Gather general webmentions of the site (maybe store on a hidden page? Or add to footer)
 - Add Last.fm link and anything else relevant to the footer
+- RSS feed
 
 - ✅ Display other albums by an artist on the artist page
 - ✅ 404 page
@@ -33,6 +35,7 @@ My personal music collection, now in a digital flavour.
 - ✅ Sort by switches (artist or date purchased)
 - ✅ Hide sort by if JS is not enabled
 - ✅ Store sort choice in local storage
+- ✅ Change sort so that it ignores "the" in titles
 - ✅ Fix build to stop unwanted artist pages being rendered (`getStaticPaths`)
 
 ## Future
@@ -40,8 +43,15 @@ My personal music collection, now in a digital flavour.
 - Discogs integration
 - Spotify integration
 - Last.fm integration (full)
+  - Pressing scrobble button should send preformatted API request directly to Last.fm
+  - Will need to ensure that doing so only works if the user is logged in on local device, so that other people can't scrobble to my account 😂 (also means others can use my site to scrobble specific albums)
+  - Perhaps some kind of additional keyboard combination (Shift + click?) first pops up a date entry to retroactively scrobble. For the most part unnecessary (don't care that much) but might be beneficial for some instances the cross month/**year** boundaries
+  - Automate awards? (Probably too much effort - MTIH)
 - Add awards
   - Top 10 per year (permanent)
   - Top 10 current (updated whenever)
   - Has been top 10 at some point (permanent)
   - Awards page with rankings and stats
+  - Top artists all of the above
+- Shops page
+- Could set up a web ring of similar sites, then use webmentions to say "I own this too" as a way of interlinking? (<-- probably needs some kind of central db)

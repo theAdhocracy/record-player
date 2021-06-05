@@ -7,6 +7,7 @@ const StyledFooter = styled.footer`
 	place-items: center;
 	min-height: 5rem;
 	margin-top: 3rem;
+	z-index: 1;
 	background-color: #2c2727;
 	color: #ffffff;
 	text-align: center;
