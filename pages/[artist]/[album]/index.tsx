@@ -1,11 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
+
+import { Sluggify } from '@utils/Sluggify'
+import { adjustColour } from '@utils/ColourAdjust'
+import { checkForAuthToken, scrobbleAlbum } from '@utils/LastFm'
+
 import Vinyl from '@components/Vinyl/Vinyl'
 import Page from '@components/Page/Page'
 import { RecordAPI } from '@components/Album/Album'
-import { Sluggify } from '@utils/Sluggify'
-import { adjustColour } from '@utils/ColourAdjust'
 import Error404 from '@components/404/404'
 import Loading from '@components/Loading/Loading'
 
@@ -52,8 +55,37 @@ const StyledPage = styled(Page)<{ colour: string }>`
 		line-height: 1;
 		cursor: pointer;
 
+		&.success {
+			filter: hue-rotate(235deg) brightness(1.5);
+
+			span {
+				filter: hue-rotate(-235deg); // reverts emoji colour
+			}
+		}
+
+		&.error {
+			filter: hue-rotate(125deg) brightness(1.5);
+
+			span {
+				filter: hue-rotate(-125deg); // reverts emoji colour
+			}
+		}
+
+		&.warn {
+			filter: hue-rotate(175deg) brightness(2.5);
+
+			span {
+				filter: hue-rotate(-175deg); // reverts emoji colour
+			}
+		}
+
 		&:hover {
 			filter: brightness(1.4);
+		}
+
+		span {
+			font-family: 'NotoMono-Regular', 'Consolas', 'Unifont', 'Apple Color Emoji', 'Segoe UI Emoji',
+				'NotoColorEmoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiSymbols', monospace;
 		}
 	}
 
@@ -256,6 +288,9 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 		return <Error404 />
 	}
 
+	// Set state of button
+	const [buttonState, setButtonState] = React.useState('ready')
+
 	// Work out tracks per side
 	let aSide = 1
 	if (album.details.vinyl) {
@@ -284,11 +319,37 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 	// Set accent colour
 	const accent = album.colour === '#000000' ? '#354797' : album.colour
 
+	// Check for auth token on page load
+	React.useEffect(() => {
+		checkForAuthToken()
+	}, [])
+
 	return (
 		<StyledPage colour={accent}>
 			<h1>{album.title}</h1>
 			<h2>{album.artist.map((artist) => artist)}</h2>
-			<button type="button">Scrobble Album</button>
+			<button
+				type="button"
+				onClick={() => scrobbleAlbum(album.tracks, album, setButtonState)}
+				className={buttonState}
+			>
+				{buttonState === 'ready' && 'Scrobble Album'}
+				{buttonState === 'success' && (
+					<>
+						<span>✅</span> Scrobbled
+					</>
+				)}
+				{buttonState === 'error' && (
+					<>
+						<span>☠</span> Failed
+					</>
+				)}
+				{buttonState === 'warn' && (
+					<>
+						<span>⚠</span> ½ Scrobbled
+					</>
+				)}
+			</button>
 
 			<Vinyl
 				isRotating={false}
@@ -321,7 +382,6 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 									const featuredArtists = track.features?.split(' | ')
 
 									const featuredString = album.artist[0] !== 'Soundtrack' ? 'feat. ' : ''
-									// console.log(featuredArtists.join(', '))
 									return (
 										<>
 											<tr key={track.number}>
@@ -416,6 +476,6 @@ export type Track = {
 	link: boolean
 }
 
-export const config = {
-	unstable_runtimeJS: false
-}
+// export const config = {
+// 	unstable_runtimeJS: false
+// }
