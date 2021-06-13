@@ -102,7 +102,11 @@ export const queryAlbum = async (artist: string, album: string) => {
 // * MUTATIONS * //
 
 // Function: Scrobble an individual track
-export const scrobbleTrack = async (track: Track, album: RecordAPI) => {
+export const scrobbleTrack = async (
+	track: Track,
+	album: RecordAPI,
+	setResponse: React.Dispatch<React.SetStateAction<string>>
+) => {
 	// Create API query body
 	const time = Math.round(new Date().getTime() / 1000) // gets current time; converts to UNIX epoch (milliseconds); divides to seconds; rounds to nearest whole
 	const query: { [key: string]: string | number } = {
@@ -118,10 +122,8 @@ export const scrobbleTrack = async (track: Track, album: RecordAPI) => {
 	}
 
 	// Create auth signature and add to query; must be MD5 hashed and contain all keys in alphabetical order, plus account secret
-	// query.api_sig = MD5(
-	// 	`album[0]${query.album}api_key${query.api_key}artist[0]${query.artist}duration[0]${query.duration}methodtrack.scrobblesk${query.sk}timestamp[0]${query.timestamp}track[0]${query.track}trackNumber[0]${query.trackNumber}baef49b8816fa313d0a83dfd76991526`
-	// ).toString()
 	query.api_sig = createLastFMSignature(query)
+	query.format = 'json'
 
 	// Send track to Last.fm API and capture response
 	const response = await fetch(`http://ws.audioscrobbler.com/2.0/`, {
@@ -131,10 +133,17 @@ export const scrobbleTrack = async (track: Track, album: RecordAPI) => {
 			'Content-type': 'application/x-www-form-urlencoded'
 		}
 	})
-	const lastAlbums = await response.text()
+	const apiResponse = await response.json()
 
-	// TODO: Error checking and success toasts
-	console.log(lastAlbums)
+	// Flag error message if received in response
+	if (apiResponse.error) {
+		console.error(`Last.fm Scrobble: ${apiResponse.message}`)
+		setResponse('error')
+		return
+	}
+
+	// If all validation passes, set as success
+	setResponse('success')
 }
 
 // Function: Scrobble an entire album
@@ -143,8 +152,6 @@ export const scrobbleAlbum = async (
 	album: RecordAPI,
 	setResponse: React.Dispatch<React.SetStateAction<string>>
 ) => {
-	// const scrobbles = tracks.map((track) => scrobbleTrack(track))
-
 	// Confirm authentication
 	const sessionKey = await authLastFM()
 
