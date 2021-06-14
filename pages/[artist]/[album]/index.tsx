@@ -369,9 +369,11 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 								</h3>
 							</caption>
 							<thead className="sr-only">
-								<th scope="col">Track Number</th>
-								<th scope="col">Track Title</th>
-								<th scope="col">Track Length</th>
+								<tr>
+									<th scope="col">Track Number</th>
+									<th scope="col">Track Title</th>
+									<th scope="col">Track Length</th>
+								</tr>
 							</thead>
 							<tbody>
 								{side.tracks.map((track) => {
@@ -384,7 +386,7 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 									const featuredString = album.artist[0] !== 'Soundtrack' ? 'feat. ' : ''
 									return (
 										<>
-											<tr key={track.number}>
+											<tr key={track.number.toString()}>
 												<td>#{track.number}</td>
 												<td>
 													{track.name}
