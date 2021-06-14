@@ -28,7 +28,8 @@ export const authLastFM = async () => {
 
 	// Send user to authorise Last.fm if token isn't present
 	if (!token) {
-		window.location.href = `https://www.last.fm/api/auth?api_key=${process.env.NEXT_PUBLIC_LASTFM}&cb=http://localhost:3000/darkstar/north?testing=true`
+		const location = window.location
+		window.location.href = `https://www.last.fm/api/auth?api_key=${process.env.NEXT_PUBLIC_LASTFM}&cb=${location}`
 	}
 }
 
