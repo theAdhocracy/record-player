@@ -49,7 +49,7 @@ export const checkForAuthToken = async () => {
 
 		// Send API request
 		const response = await fetch(
-			`http://ws.audioscrobbler.com/2.0/?method=${query.method}&api_key=${query.api_key}&token=${query.token}&api_sig=${query.api_sig}&format=json`
+			`https://ws.audioscrobbler.com/2.0/?method=${query.method}&api_key=${query.api_key}&token=${query.token}&api_sig=${query.api_sig}&format=json`
 		)
 		const sessionKeyResponse = await response.json()
 
@@ -92,7 +92,7 @@ export const createLastFMSignature = (body: { [key: string]: string | number }) 
 // Function: Query an album on the Last.fm database
 export const queryAlbum = async (artist: string, album: string) => {
 	const response = await fetch(
-		`http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=${
+		`https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=${
 			process.env.NEXT_PUBLIC_LASTFM
 		}&artist=${encodeURI(artist)}&album=${encodeURI(album)}&format=json`
 	)
@@ -127,7 +127,7 @@ export const scrobbleTrack = async (
 	query.format = 'json'
 
 	// Send track to Last.fm API and capture response
-	const response = await fetch(`http://ws.audioscrobbler.com/2.0/`, {
+	const response = await fetch(`https://ws.audioscrobbler.com/2.0/`, {
 		method: 'POST',
 		body: new URLSearchParams(query as Record<string, string>).toString(),
 		headers: {
@@ -179,7 +179,7 @@ export const scrobbleAlbum = async (
 	query.format = 'json'
 
 	// Send to Last.fm API in 50 track bundles and capture response
-	const response = await fetch(`http://ws.audioscrobbler.com/2.0/`, {
+	const response = await fetch(`https://ws.audioscrobbler.com/2.0/`, {
 		method: 'POST',
 		body: new URLSearchParams(query as Record<string, string>).toString(),
 		headers: {
