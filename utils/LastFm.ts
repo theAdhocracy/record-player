@@ -110,11 +110,12 @@ export const scrobbleTrack = async (
 ) => {
 	// Create API query body
 	const time = Math.round(new Date().getTime() / 1000) // gets current time; converts to UNIX epoch (milliseconds); divides to seconds; rounds to nearest whole
+	const trackLength = trackLengthToSeconds(track.length)
 	const query: { [key: string]: string | number } = {
 		method: 'track.scrobble',
 		'album[0]': album.title,
 		'artist[0]': album.artist[0],
-		'duration[0]': trackLengthToSeconds(track.length),
+		'duration[0]': trackLength < 31 ? 31 : trackLength, // Last.fm ignores tracks under 30 seconds so this forces it to accept them
 		'timestamp[0]': time,
 		'track[0]': track.name,
 		'trackNumber[0]': track.number,
@@ -161,9 +162,10 @@ export const scrobbleAlbum = async (
 
 	// Add track details for array
 	tracks.forEach((track, index) => {
+		const trackLength = trackLengthToSeconds(track.length)
 		query[`album[${index}]`] = album.title
 		query[`artist[${index}]`] = album.artist[0]
-		query[`duration[${index}]`] = trackLengthToSeconds(track.length)
+		query[`duration[${index}]`] = trackLength < 31 ? 31 : trackLength // Last.fm ignores tracks under 30 seconds so this forces it to accept them
 		query[`timestamp[${index}]`] = Math.round(new Date().getTime() / 1000) // converts current time to UNIX (ms); divides to seconds; rounds to integer
 		query[`track[${index}]`] = track.name
 		query[`trackNumber[${index}]`] = track.number
