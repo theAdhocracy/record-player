@@ -4,14 +4,15 @@ My personal music collection, now in a digital flavour.
 
 ## To Do
 
-- 🐛 Artists pages are borked
-
+- Be able to cope with multiple artists per album (Distant Relatives)
+- Individual side scrobble options
+- Ability to set scrobble time
+- Once all records are saved switch back to default as latest
 - Generate splatter effect for records
 - Add `h-card` to link
 - Create main header image
   - Will need a smaller version (simplified) for nav?
 - Consider microformats feed
-- Scrobble button
 - Record needle (?)
 - Desired page
 - Create CD image
@@ -30,6 +31,7 @@ My personal music collection, now in a digital flavour.
 - Add Last.fm link and anything else relevant to the footer
 - RSS feed
 
+- ✅ Scrobble button
 - ✅ Display other albums by an artist on the artist page
 - ✅ 404 page
 - ✅ Loading page
@@ -39,6 +41,8 @@ My personal music collection, now in a digital flavour.
 - ✅ Store sort choice in local storage
 - ✅ Change sort so that it ignores "the" in titles
 - ✅ Fix build to stop unwanted artist pages being rendered (`getStaticPaths`)
+- ✅ Artists pages populate from correct API
+- ✅ All tracks should be scrobbled so min length sent 31 seconds
 
 ## Future
 

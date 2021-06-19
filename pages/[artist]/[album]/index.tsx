@@ -43,6 +43,12 @@ const StyledPage = styled(Page)<{ colour: string }>`
 		width: 100%;
 	}
 
+	.controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
 	button {
 		max-width: 8rem;
 		align-self: start;
@@ -124,10 +130,11 @@ const StyledPage = styled(Page)<{ colour: string }>`
 				align-self: end;
 			}
 
-			button {
+			.controls {
 				grid-column: 2;
 				grid-row: 2;
 				margin: 2rem 1rem 0;
+				place-content: end;
 			}
 
 			section {
@@ -147,7 +154,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 				margin-right: 10%;
 			}
 
-			button {
+			.controls {
 				margin-right: 13%;
 			}
 		}
@@ -177,9 +184,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 				height: 100vh;
 			}
 
-			button {
-				grid-column: 2;
-				grid-row: 2;
+			.controls {
 				margin-right: 0;
 			}
 
@@ -324,32 +329,160 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 		checkForAuthToken()
 	}, [])
 
+	// Determine date and time settings
+	const currentDateTime = new Date()
+	const hours = currentDateTime.getHours()
+	const minutes = currentDateTime.getMinutes()
+	const currentTime = {
+		hour: hours,
+		minute: minutes,
+		twelveHour: hours > 12 ? hours - 12 : hours,
+		// Get nearest quarter, rounding down so it never gives a future time
+		quarter: minutes <= 14 ? 0 : minutes <= 29 ? 15 : minutes <= 44 ? 30 : 45
+	}
+	// Date array (within Last.fm limits of one month)
+	const oneMonthAgo = new Date(Number(currentDateTime) - 1000 * 60 * 60 * 24 * 28) // converts ms to s, then days, then * 28 for minimum month
+	const dateArray = []
+	const dateToCheck = oneMonthAgo
+	while (dateToCheck <= currentDateTime) {
+		dateArray.push(new Date(dateToCheck))
+		dateToCheck.setUTCDate(dateToCheck.getUTCDate() + 1)
+	}
+
+	console.log(currentTime)
+
 	return (
 		<StyledPage colour={accent}>
 			<h1>{album.title}</h1>
 			<h2>{album.artist.map((artist) => artist)}</h2>
-			<button
-				type="button"
-				onClick={() => scrobbleAlbum(album.tracks, album, setButtonState)}
-				className={buttonState}
-			>
-				{buttonState === 'ready' && 'Scrobble Album'}
-				{buttonState === 'success' && (
-					<>
-						<span>✅</span> Scrobbled
-					</>
-				)}
-				{buttonState === 'error' && (
-					<>
-						<span>☠</span> Failed
-					</>
-				)}
-				{buttonState === 'warn' && (
-					<>
-						<span>⚠</span> ½ Scrobbled
-					</>
-				)}
-			</button>
+			<div className="controls">
+				<button
+					type="button"
+					onClick={() => scrobbleAlbum(album.tracks, album, setButtonState)}
+					className={buttonState}
+				>
+					{buttonState === 'ready' && 'Scrobble Album'}
+					{buttonState === 'success' && (
+						<>
+							<span>✅</span> Scrobbled
+						</>
+					)}
+					{buttonState === 'error' && (
+						<>
+							<span>☠</span> Failed
+						</>
+					)}
+					{buttonState === 'warn' && (
+						<>
+							<span>⚠</span> ½ Scrobbled
+						</>
+					)}
+				</button>
+				<button type="button">
+					<span>🎛</span>
+					<span className="sr-only">Scrobble Options</span>
+				</button>
+				<section>
+					<h3 className="sr-only">Choose side to scrobble:</h3>
+					{sides.map((side) => {
+						return (
+							<>
+								<label htmlFor={side.side.toLowerCase()}>Side {side.side}</label>
+								<input
+									key={side.side}
+									type="checkbox"
+									id={side.side.toLowerCase()}
+									defaultChecked
+								/>
+							</>
+						)
+					})}
+
+					<fieldset>
+						<legend>Start Time:</legend>
+						<label htmlFor="time-hour" className="sr-only">
+							Set hour
+						</label>
+						<select id="time-hour">
+							<option selected={currentTime.twelveHour === 1} value="one">
+								01
+							</option>
+							<option selected={currentTime.twelveHour === 2} value="two">
+								02
+							</option>
+							<option selected={currentTime.twelveHour === 3} value="three">
+								03
+							</option>
+							<option selected={currentTime.twelveHour === 4} value="four">
+								04
+							</option>
+							<option selected={currentTime.twelveHour === 5} value="five">
+								05
+							</option>
+							<option selected={currentTime.twelveHour === 6} value="six">
+								06
+							</option>
+							<option selected={currentTime.twelveHour === 7} value="seven">
+								07
+							</option>
+							<option selected={currentTime.twelveHour === 8} value="eight">
+								08
+							</option>
+							<option selected={currentTime.twelveHour === 9} value="nine">
+								09
+							</option>
+							<option selected={currentTime.twelveHour === 10} value="ten">
+								10
+							</option>
+							<option selected={currentTime.twelveHour === 11} value="eleven">
+								11
+							</option>
+							<option selected={currentTime.twelveHour === 12} value="twelve">
+								12
+							</option>
+						</select>
+						<label htmlFor="time-minute" className="sr-only">
+							Set minutes
+						</label>
+						<select id="time-minute">
+							<option selected={currentTime.quarter === 0} value="hour">
+								00
+							</option>
+							<option selected={currentTime.quarter === 15} value="quarter-past">
+								15
+							</option>
+							<option selected={currentTime.quarter === 30} value="half-hour">
+								30
+							</option>
+							<option selected={currentTime.quarter === 45} value="quarter-to">
+								45
+							</option>
+						</select>
+						<label htmlFor="time-meridian" className="sr-only">
+							Set meridian
+						</label>
+						<select id="time-meridian">
+							<option value="am" selected={currentTime.hour <= 12 ? true : false}>
+								AM
+							</option>
+							<option value="pm" selected={currentTime.hour > 12 ? true : false}>
+								PM
+							</option>
+						</select>
+					</fieldset>
+
+					<label htmlFor="start-date">Start date:</label>
+					<select id="start-date">
+						{dateArray.reverse().map((date, index) => {
+							return (
+								<option value={index} key={index}>
+									{date.toDateString().replace(/ [0-9][0-9][0-9][0-9]$/, '')}
+								</option>
+							)
+						})}
+					</select>
+				</section>
+			</div>
 
 			<Vinyl
 				isRotating={false}

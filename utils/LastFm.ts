@@ -180,7 +180,7 @@ export const scrobbleAlbum = async (
 	query.api_sig = createLastFMSignature(query)
 	query.format = 'json'
 
-	// Send to Last.fm API in 50 track bundles and capture response
+	// Send to Last.fm API and capture response
 	const response = await fetch(`https://ws.audioscrobbler.com/2.0/`, {
 		method: 'POST',
 		body: new URLSearchParams(query as Record<string, string>).toString(),
