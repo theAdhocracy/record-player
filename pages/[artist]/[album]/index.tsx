@@ -297,6 +297,9 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 	// Set state of button
 	const [buttonState, setButtonState] = React.useState('ready')
 
+	// Set options state
+	const [optionsState, setOptionsState] = React.useState({})
+
 	// Work out tracks per side
 	let aSide = 1
 	if (album.details.vinyl) {
@@ -330,6 +333,8 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 		checkForAuthToken()
 	}, [])
 
+	console.log(optionsState)
+
 	return (
 		<StyledPage colour={accent}>
 			<h1>{album.title}</h1>
@@ -361,7 +366,7 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 					<span>🎛</span>
 					<span className="sr-only">Scrobble Options</span>
 				</button>
-				<ScrobbleOptions sides={sides} />
+				<ScrobbleOptions sides={sides} callback={setOptionsState} />
 			</div>
 
 			<Vinyl
