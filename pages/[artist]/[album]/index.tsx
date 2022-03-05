@@ -11,7 +11,7 @@ import Page from '@components/Page/Page'
 import { RecordAPI } from '@components/Album/Album'
 import Error404 from '@components/404/404'
 import Loading from '@components/Loading/Loading'
-import ScrobbleOptions from '@components/ScrobbleOptions/ScrobbleOptions'
+import ScrobbleOptions, { Options } from '@components/ScrobbleOptions/ScrobbleOptions'
 
 const StyledPage = styled(Page)<{ colour: string }>`
 	main {
@@ -297,7 +297,8 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 	// Set state of button
 	const [buttonState, setButtonState] = React.useState('ready')
 
-	// Set options state
+	// Initialise options state
+	const [showOptions, setShowOptions] = React.useState(false)
 	const [optionsState, setOptionsState] = React.useState({})
 
 	// Work out tracks per side
@@ -333,8 +334,6 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 		checkForAuthToken()
 	}, [])
 
-	console.log(optionsState)
-
 	return (
 		<StyledPage colour={accent}>
 			<h1>{album.title}</h1>
@@ -342,7 +341,9 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 			<div className="controls">
 				<button
 					type="button"
-					onClick={() => scrobbleAlbum(album.tracks, album, setButtonState)}
+					onClick={() =>
+						scrobbleAlbum(album.tracks, album, setButtonState, optionsState as Options)
+					}
 					className={buttonState}
 				>
 					{buttonState === 'ready' && 'Scrobble Album'}
@@ -362,11 +363,18 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 						</>
 					)}
 				</button>
-				<button type="button">
+				<button
+					type="button"
+					onClick={() => {
+						setShowOptions(!showOptions)
+						setOptionsState({})
+						// Resets options state on interaction as a hacky way to prevent them overriding the default values if extra options are not wanted. When the options panel is opened it autopopulates with the current datetime, but this is to the nearest quarter hour, so less accurate. That means if you accidentally open the options panel you can then close it and this will reset to default.
+					}}
+				>
 					<span>🎛</span>
 					<span className="sr-only">Scrobble Options</span>
 				</button>
-				<ScrobbleOptions sides={sides} callback={setOptionsState} />
+				{showOptions && <ScrobbleOptions sides={sides} callback={setOptionsState} />}
 			</div>
 
 			<Vinyl

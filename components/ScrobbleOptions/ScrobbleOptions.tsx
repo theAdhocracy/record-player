@@ -1,6 +1,16 @@
 import React from 'react'
 import { Side } from 'pages/[artist]/[album]'
 
+export type Options = {
+	hour: string | number
+	quarter: string | number
+	meridian: 'am' | 'pm'
+	sides: {
+		[key: string]: boolean
+	}
+	date: string
+}
+
 const ScrobbleOptions = ({
 	sides,
 	callback
@@ -44,8 +54,6 @@ const ScrobbleOptions = ({
 		sides: sidesObject,
 		date: dateArray[0].toDateString()
 	})
-
-	// console.log(options)
 
 	// Trigger callback
 	React.useEffect(() => {

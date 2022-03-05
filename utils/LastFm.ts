@@ -1,6 +1,7 @@
 // A set of functions for interfacing with the Last.fm API
 
 import { RecordAPI } from '@components/Album/Album'
+import { Options } from '@components/ScrobbleOptions/ScrobbleOptions'
 import { MD5 } from 'crypto-js'
 import { Track } from 'pages/[artist]/[album]'
 import React from 'react'
@@ -13,6 +14,18 @@ export const trackLengthToSeconds = (duration: string) => {
 	const seconds = Number(timeArray[0]) * 60 + Number(timeArray[1])
 
 	return seconds
+}
+
+// Function: Converts provided info from options form into a valid datetime string
+export const convertToDateTime = (options: any) => {
+	const { hour, quarter, meridian, date } = options
+
+	// Convert to 24hr clock
+	let twentyFourHour = Number(hour)
+	if (meridian === 'pm' && twentyFourHour !== 12) twentyFourHour = twentyFourHour + 12 // +12 to the time for 1pm-11pm
+	if (meridian === 'am' && twentyFourHour === 12) twentyFourHour = 0 // turn midnight to 00:00
+
+	return `${date} ${twentyFourHour.toString()}:${quarter}`
 }
 
 // * AUTHORISATION * //
@@ -152,7 +165,8 @@ export const scrobbleTrack = async (
 export const scrobbleAlbum = async (
 	tracks: Track[],
 	album: RecordAPI,
-	setResponse: React.Dispatch<React.SetStateAction<string>>
+	setResponse: React.Dispatch<React.SetStateAction<string>>,
+	options?: Options
 ) => {
 	// Confirm authentication
 	const sessionKey = await authLastFM()
@@ -160,13 +174,29 @@ export const scrobbleAlbum = async (
 	// Create empty API query
 	const query: { [key: string]: string | number } = {}
 
+	// Check whether options have been provided e.g. for backfeeding scrobbles
+	const hasOptions = options && Object.entries(options).length !== 0
+
+	// TO DO:
+	// Normalise datetime: subtracts the total album length from the current time to generate the actual start point
+	// - shouldn't happen if options are provided; can assume the human has entered the correct start time
+
+	// Set datetime for the scrobble
+	const datetime = hasOptions ? new Date(convertToDateTime(options)) : new Date()
+
 	// Add track details for array
 	tracks.forEach((track, index) => {
 		const trackLength = trackLengthToSeconds(track.length)
+		const timestamp = Math.round(datetime.getTime() / 1000) // converts provided time to UNIX (ms); divides to seconds; rounds to integer
+
+		// TO DO:
+		// Take a normalised datetime and add the previous track duration to it, so that this keeps increasing. Already in a for loop so should be doable.
+		// Maybe a `let durationElapsed` outside of the forEach loop and then change it in each forEach to ++trackLength?
+
 		query[`album[${index}]`] = album.title
 		query[`artist[${index}]`] = album.artist[0]
 		query[`duration[${index}]`] = trackLength < 31 ? 31 : trackLength // Last.fm ignores tracks under 30 seconds so this forces it to accept them
-		query[`timestamp[${index}]`] = Math.round(new Date().getTime() / 1000) // converts current time to UNIX (ms); divides to seconds; rounds to integer
+		query[`timestamp[${index}]`] = timestamp
 		query[`track[${index}]`] = track.name
 		query[`trackNumber[${index}]`] = track.number
 	})
