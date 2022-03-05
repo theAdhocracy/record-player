@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 import { Side } from 'pages/[artist]/[album]'
 
 export type Options = {
@@ -10,6 +11,39 @@ export type Options = {
 	}
 	date: string
 }
+
+const OptionsContainer = styled.section`
+	&.options-form {
+		display: block;
+		background-color: #e4e4e4;
+		border: 2px solid #b1b1b1;
+		border-radius: 4px;
+		margin: 0;
+		padding: 1rem;
+		max-width: max-content;
+		grid-column: 1 / -1;
+
+		fieldset {
+			margin: 1rem 0;
+			padding: 0;
+			border: none;
+		}
+
+		legend {
+			margin-bottom: 0.5rem;
+		}
+
+		label,
+		select {
+			margin-right: 0.5rem;
+			white-space: nowrap;
+		}
+
+		label + input {
+			margin-right: 1rem;
+		}
+	}
+`
 
 const ScrobbleOptions = ({
 	sides,
@@ -61,7 +95,7 @@ const ScrobbleOptions = ({
 	}, [options])
 
 	return (
-		<section>
+		<OptionsContainer className="options-form">
 			<h3 className="sr-only">Choose side to scrobble:</h3>
 			{sides.map((side) => {
 				return (
@@ -130,7 +164,7 @@ const ScrobbleOptions = ({
 				</select>
 			</fieldset>
 
-			<label htmlFor="start-date">Start date:</label>
+			<label htmlFor="start-date">Start Date:</label>
 			<select
 				id="start-date"
 				value={options.date}
@@ -144,7 +178,7 @@ const ScrobbleOptions = ({
 					)
 				})}
 			</select>
-		</section>
+		</OptionsContainer>
 	)
 }
 

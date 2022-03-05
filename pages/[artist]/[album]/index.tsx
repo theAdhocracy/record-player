@@ -45,9 +45,15 @@ const StyledPage = styled(Page)<{ colour: string }>`
 	}
 
 	.controls {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
+		display: block;
+
+		& > button {
+			margin-bottom: 0.5rem;
+		}
+
+		& > button:first-of-type {
+			margin-right: 0.5rem;
+		}
 	}
 
 	button {
@@ -134,8 +140,10 @@ const StyledPage = styled(Page)<{ colour: string }>`
 			.controls {
 				grid-column: 2;
 				grid-row: 2;
+				display: grid;
+				grid-template-columns: max-content min-content;
 				margin: 2rem 1rem 0;
-				place-content: end;
+				place-self: end;
 			}
 
 			section {
