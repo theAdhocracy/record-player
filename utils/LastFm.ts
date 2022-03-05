@@ -177,26 +177,36 @@ export const scrobbleAlbum = async (
 	// Check whether options have been provided e.g. for backfeeding scrobbles
 	const hasOptions = options && Object.entries(options).length !== 0
 
-	// TO DO:
-	// Normalise datetime: subtracts the total album length from the current time to generate the actual start point
-	// - shouldn't happen if options are provided; can assume the human has entered the correct start time
+	// Set datetime to scrobble from
+	let datetime = hasOptions ? new Date(convertToDateTime(options)) : new Date()
 
-	// Set datetime for the scrobble
-	const datetime = hasOptions ? new Date(convertToDateTime(options)) : new Date()
+	// Normalise datetime (assumes that a user pressing "scrobble" will do so at the end of an album and works backwards to determine the likely starting time)
+	if (!hasOptions) {
+		// Calculate album duration
+		let albumDuration = 0
+		tracks.forEach((track) => {
+			const duration = trackLengthToSeconds(track.length)
+			albumDuration = albumDuration + duration
+		})
+
+		// Subtract album length from current datetime value
+		datetime = new Date(datetime.valueOf() - albumDuration * 1000)
+	}
 
 	// Add track details for array
+	let durationElapsed = 0
 	tracks.forEach((track, index) => {
 		const trackLength = trackLengthToSeconds(track.length)
 		const timestamp = Math.round(datetime.getTime() / 1000) // converts provided time to UNIX (ms); divides to seconds; rounds to integer
 
-		// TO DO:
-		// Take a normalised datetime and add the previous track duration to it, so that this keeps increasing. Already in a for loop so should be doable.
-		// Maybe a `let durationElapsed` outside of the forEach loop and then change it in each forEach to ++trackLength?
+		// Add tracklength to durationElapsed so that the next timestamp can be more accurate
+		durationElapsed = durationElapsed + trackLength
 
+		// Set track information
 		query[`album[${index}]`] = album.title
 		query[`artist[${index}]`] = album.artist[0]
 		query[`duration[${index}]`] = trackLength < 31 ? 31 : trackLength // Last.fm ignores tracks under 30 seconds so this forces it to accept them
-		query[`timestamp[${index}]`] = timestamp
+		query[`timestamp[${index}]`] = timestamp + durationElapsed
 		query[`track[${index}]`] = track.name
 		query[`trackNumber[${index}]`] = track.number
 	})
