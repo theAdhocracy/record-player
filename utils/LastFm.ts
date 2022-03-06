@@ -177,6 +177,19 @@ export const scrobbleAlbum = async (
 	// Check whether options have been provided e.g. for backfeeding scrobbles
 	const hasOptions = options && Object.entries(options).length !== 0
 
+	// Remove unwanted tracks (based on Side values from options form)
+	unwantedTracks: if (hasOptions) {
+		// If all sides are checked, do nothing
+		if (Object.values(options.sides).every(Boolean)) {
+			break unwantedTracks
+		}
+
+		// Filter tracks based on value of "side"
+		tracks = tracks.filter((track) => {
+			return options.sides[track.side] // Uses the string value of "side" to match the key in `options.sides`; only truthy key-value pairs are kept
+		})
+	}
+
 	// Set datetime to scrobble from
 	let datetime = hasOptions ? new Date(convertToDateTime(options)) : new Date()
 
