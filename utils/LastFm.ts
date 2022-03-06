@@ -180,20 +180,21 @@ export const scrobbleAlbum = async (
 	// Remove unwanted tracks (based on Side values from options form)
 	unwantedTracks: if (hasOptions) {
 		// If all sides are checked, do nothing
-		if (Object.values(options.sides).every(Boolean)) {
+		if (options && Object.values(options.sides).every(Boolean)) {
 			break unwantedTracks
 		}
 
 		// Filter tracks based on value of "side"
 		tracks = tracks.filter((track) => {
-			return options.sides[track.side] // Uses the string value of "side" to match the key in `options.sides`; only truthy key-value pairs are kept
+			return options?.sides[track.side] // Uses the string value of "side" to match the key in `options.sides`; only truthy key-value pairs are kept
 		})
 	}
 
 	// Set the datetime to scrobble from
 	const onlySideAltered =
 		hasOptions &&
-		new Date().getDate() === new Date(options?.date).getDate() &&
+		options &&
+		new Date().getDate() === new Date(options.date).getDate() &&
 		new Date().getHours() === new Date(convertToDateTime(options)).getHours() // Checks whether options have been used purely for backfeed purposes; if they have then datetime shouldn't be altered below
 	let datetime = hasOptions && !onlySideAltered ? new Date(convertToDateTime(options)) : new Date()
 
