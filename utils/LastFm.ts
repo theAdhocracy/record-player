@@ -190,11 +190,15 @@ export const scrobbleAlbum = async (
 		})
 	}
 
-	// Set datetime to scrobble from
-	let datetime = hasOptions ? new Date(convertToDateTime(options)) : new Date()
+	// Set the datetime to scrobble from
+	const onlySideAltered =
+		hasOptions &&
+		new Date().getDate() === new Date(options?.date).getDate() &&
+		new Date().getHours() === new Date(convertToDateTime(options)).getHours() // Checks whether options have been used purely for backfeed purposes; if they have then datetime shouldn't be altered below
+	let datetime = hasOptions && !onlySideAltered ? new Date(convertToDateTime(options)) : new Date()
 
 	// Normalise datetime (assumes that a user pressing "scrobble" will do so at the end of an album and works backwards to determine the likely starting time)
-	if (!hasOptions) {
+	if (!hasOptions || onlySideAltered) {
 		// Calculate album duration
 		let albumDuration = 0
 		tracks.forEach((track) => {
