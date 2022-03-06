@@ -141,7 +141,7 @@ const StyledPage = styled(Page)<{ colour: string }>`
 				grid-column: 2;
 				grid-row: 2;
 				display: grid;
-				grid-template-columns: max-content min-content;
+				grid-template-columns: max-content 3rem;
 				margin: 2rem 1rem 0;
 				place-self: end;
 			}
@@ -379,7 +379,7 @@ export const AlbumPage = ({ album, error }: { album: RecordAPI; error: boolean }
 						// Resets options state on interaction as a hacky way to prevent them overriding the default values if extra options are not wanted. When the options panel is opened it autopopulates with the current datetime, but this is to the nearest quarter hour, so less accurate. That means if you accidentally open the options panel you can then close it and this will reset to default.
 					}}
 				>
-					<span>🎛</span>
+					<span>⚙</span>
 					<span className="sr-only">Scrobble Options</span>
 				</button>
 				{showOptions && <ScrobbleOptions sides={sides} callback={setOptionsState} />}

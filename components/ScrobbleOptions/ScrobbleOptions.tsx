@@ -20,7 +20,7 @@ const OptionsContainer = styled.section`
 		border-radius: 4px;
 		margin: 0;
 		padding: 1rem;
-		max-width: max-content;
+		width: max-content;
 		grid-column: 1 / -1;
 
 		fieldset {
