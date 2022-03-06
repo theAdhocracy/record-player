@@ -105,7 +105,7 @@ const Wrapper = styled.label`
 `
 
 export const Toggle = ({ onChange }: ToggleTypes) => {
-	const [toggle, setToggle] = React.useState(true)
+	const [toggle, setToggle] = React.useState(false)
 
 	// Set toggle position based on localstorage sort value
 	React.useLayoutEffect(() => {

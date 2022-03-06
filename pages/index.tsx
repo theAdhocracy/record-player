@@ -69,7 +69,7 @@ const StyledPage = styled(Page)`
 `
 
 export default function Home({ records }: HomeTypes): JSX.Element {
-	const [sortValue, setSortValue] = React.useState('alpha')
+	const [sortValue, setSortValue] = React.useState('date')
 	const [jsOnly, setJsOnly] = React.useState(false)
 
 	// Local storage
