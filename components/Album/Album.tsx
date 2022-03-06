@@ -57,6 +57,7 @@ const Article = styled.article<{ colour: string }>`
 
 	h2,
 	h3 {
+		max-width: 18ch;
 		padding-left: 0.6rem;
 		padding-right: 0.6rem;
 	}
