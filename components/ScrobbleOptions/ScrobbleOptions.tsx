@@ -61,7 +61,7 @@ const ScrobbleOptions = ({
 	const currentTime = {
 		hour: hours,
 		minute: minutes,
-		twelveHour: hours > 12 ? hours - 12 : hours,
+		twelveHour: hours > 12 ? hours - 12 : hours === 0 ? 12 : hours,
 		// Get nearest quarter, rounding down so it never gives a future time
 		quarter: minutes <= 14 ? 0 : minutes <= 29 ? 15 : minutes <= 44 ? 30 : 45
 	}
