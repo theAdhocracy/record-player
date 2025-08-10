@@ -1,0 +1,130 @@
+---
+import Vinyl from '@/components/Vinyl.astro'
+---
+
+<label id="sort" for="sort-toggle">
+	<span>sort by</span>
+	<span>a-z</span>
+	<input id="sort-toggle" type="checkbox" />
+	<div>
+		<Vinyl cover={''} slug="sort" trackCount={3} colour={'#354797'} />
+	</div>
+	<span>date</span>
+</label>
+
+<script>
+	import { sortAlbumGrid } from '@/utils/SortAlbums'
+
+	const sortToggle = document.querySelector('#sort-toggle')
+
+	// Function: updates sorting preference via toggle
+	sortToggle?.addEventListener('change', () => {
+		const sort = (sortToggle as HTMLInputElement)?.checked ? 'date' : 'alpha'
+		localStorage.setItem('sort', sort)
+		sortAlbumGrid(sort)
+	})
+</script>
+
+<style>
+	#sort {
+		--accent: #f16426;
+
+		display: grid;
+		grid-template-columns: 1fr 2fr 1fr;
+		width: max-content;
+		place-content: center;
+		place-items: center;
+		margin: 0 auto 1rem;
+		flex-direction: column;
+
+		span {
+			font-style: italic;
+			color: #00000066;
+			transition: color 0.75s ease-in;
+		}
+
+		span:first-child {
+			grid-column: 1 / -1;
+			opacity: 0;
+			transition: opacity 0.75s ease-in;
+			align-self: end;
+		}
+
+		div,
+		input {
+			grid-column: 2;
+			grid-row: 2;
+		}
+
+		input {
+			width: 4.38rem;
+			height: 2.4rem;
+			opacity: 0.0001;
+			cursor: pointer;
+			z-index: 1;
+		}
+
+		div {
+			display: flex;
+			max-height: 3.4rem;
+			width: 4.38rem;
+			border: 3px solid #00000066;
+			border-radius: 1.75rem;
+			transition:
+				transform 1s ease-in-out,
+				border 0.5s ease-out;
+			background-color: white;
+		}
+
+		svg {
+			transition:
+				transform 1s ease-in-out,
+				filter 1s ease-out,
+				opacity 1.2s ease-in;
+			height: 2rem;
+			filter: grayscale(1);
+			opacity: 0.75;
+		}
+
+		/* Apply accents on hover */
+		&:hover,
+		&:focus-within {
+			& > span:first-child {
+				opacity: 1;
+			}
+
+			span:not(:first-child) {
+				color: var(--accent);
+			}
+
+			div {
+				border-color: var(--accent);
+
+				svg {
+					filter: grayscale(0) hue-rotate(145deg) brightness(1.8);
+					opacity: 1;
+				}
+			}
+		}
+
+		/* Modify accents when checked */
+		&:has(input:checked) {
+			--accent: #354797;
+
+			svg {
+				transform: translateX(100%);
+			}
+
+			&:hover svg,
+			&:focus-within svg {
+				filter: grayscale(0);
+			}
+		}
+	}
+
+	@media (scripting: none) {
+		#sort {
+			display: none;
+		}
+	}
+</style>

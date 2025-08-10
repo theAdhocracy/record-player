@@ -1,0 +1,114 @@
+---
+import type { Side } from '@/pages/[artist]/[album]/index.astro'
+
+export type Options = {
+	hour: string | number
+	quarter: string | number
+	meridian: 'am' | 'pm'
+	sides: {
+		[key: string]: boolean
+	}
+	date: string
+}
+
+const { sides } = Astro.props as {
+	sides: Side[]
+}
+---
+
+<section class="scrobble-options" data-hidden>
+	<h3 class="sr-only">Choose side to scrobble:</h3>
+
+	{
+		sides.map((side) => {
+			return (
+				<>
+					<label for={side.side.toLowerCase()}>Side {side.side}</label>
+					<input
+						name={`side-${side.side.toLowerCase()}`}
+						type="checkbox"
+						id={side.side.toLowerCase()}
+						checked
+					/>
+				</>
+			)
+		})
+	}
+
+	<fieldset>
+		<legend>Start Time:</legend>
+		<label for="time-hour" class="sr-only"> Set hour </label>
+		<select id="time-hour" name="hour">
+			<option value="1">01</option>
+			<option value="2">02</option>
+			<option value="3">03</option>
+			<option value="4">04</option>
+			<option value="5">05</option>
+			<option value="6">06</option>
+			<option value="7">07</option>
+			<option value="8">08</option>
+			<option value="9">09</option>
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+		</select>
+		<label for="time-minute" class="sr-only"> Set minutes </label>
+		<select id="time-minute" name="quarter">
+			<option value="0">00</option>
+			<option value="15">15</option>
+			<option value="30">30</option>
+			<option value="45">45</option>
+		</select>
+		<label for="time-meridian" class="sr-only"> Set meridian </label>
+		<select id="time-meridian" name="meridian">
+			<option value="am">AM</option>
+			<option value="pm">PM</option>
+		</select>
+	</fieldset>
+
+	<label for="start-date">Start Date:</label>
+	<select id="start-date" name="date">
+		<option value={new Date().toDateString()}>
+			<!-- Only populates one value as we destroy it & repopulate via client-side logic -->
+			{new Date().toDateString().replace(/ [0-9][0-9][0-9][0-9]$/, '')}
+		</option>
+	</select>
+</section>
+
+<style>
+	.scrobble-options {
+		display: block;
+		background-color: #e4e4e4;
+		border: 2px solid #b1b1b1;
+		border-radius: 4px;
+		margin: 0;
+		padding: 1rem;
+		width: max-content;
+		grid-column: 1 / -1;
+
+		fieldset {
+			margin: 1rem 0;
+			padding: 0;
+			border: none;
+		}
+
+		legend {
+			margin-bottom: 0.5rem;
+		}
+
+		label,
+		select {
+			margin-right: 0.5rem;
+			white-space: nowrap;
+		}
+
+		label + input {
+			margin-right: 1rem;
+		}
+
+		/* Toggle */
+		&[data-hidden] {
+			display: none;
+		}
+	}
+</style>

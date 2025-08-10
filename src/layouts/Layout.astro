@@ -1,0 +1,103 @@
+---
+import '@/styles/global.css'
+
+const { class: className } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Adhoc Records</title>
+		<meta name="description" content="Personal record collection and jukebox" />
+		<meta name="generator" content={Astro.generator} />
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💿</text></svg>"
+		/>
+	</head>
+</html>
+<body>
+	<header>
+		<nav>
+			<ul role="list">
+				<li>
+					<a href="https://theadhocracy.co.uk">theAdhocracy</a>
+				</li>
+				<li>
+					<a href="/">Collection</a>
+				</li>
+				<li>💿</li>
+				<li>
+					<a href="/wanted">Desired</a>
+				</li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id={className}>
+		<slot />
+	</main>
+
+	<footer>
+		<p>Powered by 🎼</p>
+	</footer>
+</body>
+
+<style>
+	body {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+
+		main {
+			flex: 1;
+			overflow: hidden;
+		}
+
+		header,
+		footer,
+		main {
+			width: 100%;
+		}
+	}
+
+	nav {
+		display: flex;
+		place-content: center;
+		place-items: center;
+
+		ul {
+			display: grid;
+			grid-template-columns: 2fr max-content max-content max-content 2fr;
+			gap: 1rem;
+			width: 100%;
+			list-style: none;
+			padding: 0 2rem;
+		}
+
+		li {
+			margin: 0;
+			padding: 0;
+		}
+
+		@media screen and (min-width: 400px) {
+			ul {
+				gap: 2rem;
+			}
+		}
+	}
+
+	footer {
+		display: flex;
+		place-content: center;
+		place-items: center;
+		min-height: 5rem;
+		margin-top: 3rem;
+		z-index: 1;
+		background-color: #2c2727;
+		color: #ffffff;
+		text-align: center;
+	}
+</style>
