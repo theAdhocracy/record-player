@@ -2,6 +2,7 @@
 import ScrobbleOptions from '@/components/ScrobbleOptions.astro'
 
 const { accent, sides, album } = Astro.props
+const spotifyURI = album.spotify?.uri || ''
 ---
 
 <div
@@ -16,7 +17,13 @@ const { accent, sides, album } = Astro.props
 		<span>⚙</span>
 		<span class="sr-only">Scrobble Options</span>
 	</button>
-	<button>▶️ Spotify</button>
+	{
+		spotifyURI ? (
+			<a href={spotifyURI}>
+				<span>▶️</span> Spotify
+			</a>
+		) : null
+	}
 	<ScrobbleOptions sides={sides} />
 </div>
 
@@ -153,7 +160,9 @@ const { accent, sides, album } = Astro.props
 		gap: 0.5rem;
 		flex-wrap: wrap;
 
-		button {
+		button,
+		a {
+			block-size: 2rem;
 			max-width: 8rem;
 			align-self: start;
 			justify-self: end;
@@ -163,6 +172,7 @@ const { accent, sides, album } = Astro.props
 			border-radius: 4px;
 			color: #ffffff;
 			line-height: 1;
+			font-size: 0.825rem;
 			cursor: pointer;
 
 			&.success {
