@@ -16,6 +16,7 @@ const { accent, sides, album } = Astro.props
 		<span>⚙</span>
 		<span class="sr-only">Scrobble Options</span>
 	</button>
+	<button>▶️ Spotify</button>
 	<ScrobbleOptions sides={sides} />
 </div>
 
@@ -148,61 +149,55 @@ const { accent, sides, album } = Astro.props
 
 <style define:vars={{ accent }}>
 	.controls {
-		display: block;
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
 
-		& > button {
-			margin-bottom: 0.5rem;
-		}
+		button {
+			max-width: 8rem;
+			align-self: start;
+			justify-self: end;
+			padding: 0.4rem 0.7rem;
+			background-color: var(--accent);
+			border: 2px solid var(--accent);
+			border-radius: 4px;
+			color: #ffffff;
+			line-height: 1;
+			cursor: pointer;
 
-		& > button:first-of-type {
-			margin-right: 0.5rem;
-		}
-	}
+			&.success {
+				filter: hue-rotate(235deg) brightness(1.5);
 
-	button {
-		max-width: 8rem;
-		align-self: start;
-		justify-self: end;
-		padding: 0.4rem 0.7rem;
-		background-color: var(--accent);
-		border: 2px solid var(--accent);
-		border-radius: 4px;
-		color: #ffffff;
-		line-height: 1;
-		cursor: pointer;
+				span {
+					filter: hue-rotate(-235deg); /* reverts emoji colour */
+				}
+			}
 
-		&.success {
-			filter: hue-rotate(235deg) brightness(1.5);
+			&.error {
+				filter: hue-rotate(125deg) brightness(1.5);
+
+				span {
+					filter: hue-rotate(-125deg); /* reverts emoji colour */
+				}
+			}
+
+			&.warn {
+				filter: hue-rotate(175deg) brightness(2.5);
+
+				span {
+					filter: hue-rotate(-175deg); /* reverts emoji colour */
+				}
+			}
+
+			&:hover {
+				filter: brightness(1.4);
+			}
 
 			span {
-				filter: hue-rotate(-235deg); /* reverts emoji colour */
+				font-family:
+					'NotoMono-Regular', 'Consolas', 'Unifont', 'Apple Color Emoji', 'Segoe UI Emoji',
+					'NotoColorEmoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiSymbols', monospace;
 			}
-		}
-
-		&.error {
-			filter: hue-rotate(125deg) brightness(1.5);
-
-			span {
-				filter: hue-rotate(-125deg); /* reverts emoji colour */
-			}
-		}
-
-		&.warn {
-			filter: hue-rotate(175deg) brightness(2.5);
-
-			span {
-				filter: hue-rotate(-175deg); /* reverts emoji colour */
-			}
-		}
-
-		&:hover {
-			filter: brightness(1.4);
-		}
-
-		span {
-			font-family:
-				'NotoMono-Regular', 'Consolas', 'Unifont', 'Apple Color Emoji', 'Segoe UI Emoji',
-				'NotoColorEmoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiSymbols', monospace;
 		}
 	}
 
@@ -211,9 +206,10 @@ const { accent, sides, album } = Astro.props
 			grid-column: 2;
 			grid-row: 2;
 			display: grid;
-			grid-template-columns: max-content 3rem;
+			grid-template-columns: 1fr max-content max-content;
 			margin: 2rem 1rem 0;
 			place-self: end;
+			place-content: end;
 		}
 	}
 

@@ -114,7 +114,7 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 			z-index: 1;
 		}
 
-		& > section {
+		& > .tracklist {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 1rem;
@@ -136,7 +136,7 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 			margin: 0;
 
 			h1 {
-				grid-column: 1 / -1;
+				grid-column: 2;
 				grid-row: 1;
 				align-self: start;
 				justify-self: end;
@@ -150,16 +150,17 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 
 			h2 {
 				grid-column: 1;
-				grid-row-start: 1;
+				grid-row-start: 2;
 				grid-row-end: 4;
 				margin: 0;
-				margin-bottom: 3rem;
+				padding-block: 0.5rem;
 				font-size: 9vh;
 				writing-mode: vertical-lr;
-				align-self: end;
+				/* align-self: end; */
 			}
 
-			section {
+			.tracklist {
+				grid-column: 2;
 				margin-bottom: calc(55vw - 130px); /* 130px is min height of footer */
 				place-content: center;
 			}
@@ -184,7 +185,6 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 			padding: 0;
 
 			h1 {
-				grid-column: auto;
 				min-width: 5.5em;
 				font-size: 8rem;
 				margin-right: 0;
@@ -202,7 +202,7 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 				height: 100vh;
 			}
 
-			section {
+			.tracklist {
 				margin: 2rem 0 0;
 				justify-content: end;
 				align-content: start;
@@ -216,21 +216,21 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 				margin-left: 5vh;
 			}
 
-			section {
+			.tracklist {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 2rem clamp(2rem, 6rem, 10rem);
 				justify-self: end;
-				align-self: center;
+				align-self: start;
 				height: max-content;
-				margin: 0 0 0 8vh;
+				margin: 2rem 0 0 8vh;
 			}
 		}
 	}
 
 	@media screen and (min-width: 1750px) {
 		#album-page {
-			section {
+			.tracklist {
 				display: grid;
 				grid-template-columns: repeat(2, minmax(23rem, max-content));
 				justify-content: end;
