@@ -1,0 +1,136 @@
+---
+import type { Side } from '@/pages/[artist]/[album]/index.astro'
+import type { RecordAPI } from './Album.astro'
+import { Sluggify } from '@/utils/Sluggify'
+
+const { sides, album } = Astro.props as {
+	sides: Side[]
+	album: RecordAPI
+}
+
+// Set accent colours
+const accent = album.colour === '#000000' ? '#354797' : album.colour
+const table = accent !== '#000000' ? accent : '#354797'
+---
+
+<section class="tracklist">
+	{
+		sides.map((side) => {
+			return (
+				<table>
+					<caption>
+						<h3>
+							<span class="sr-only">Tracklist for </span>Side {side.side}
+						</h3>
+					</caption>
+					<thead class="sr-only">
+						<tr>
+							<th scope="col">Track Number</th>
+							<th scope="col">Track Title</th>
+							<th scope="col">Track Length</th>
+						</tr>
+					</thead>
+					<tbody>
+						{side.tracks.map((track) => {
+							const duration = {
+								minute: track.length.replace(/:.*$/, ''),
+								second: track.length.replace(/^.*:/, '')
+							}
+							const featuredArtists = track.features?.split(' | ')
+
+							const featuredString = album.artist[0] !== 'Soundtrack' ? 'feat. ' : ''
+							return (
+								<tr>
+									<td>#{track.number}</td>
+									<td>
+										{track.name}
+										{/* Featured artist */}
+										{track.features && (
+											<span>
+												{featuredString}
+												{featuredArtists.map((artist, index) =>
+													track.link ? (
+														<a href={`/${Sluggify(artist)}`}>{` ${artist}`}</a>
+													) : (
+														`${artist}${
+															index + 1 < featuredArtists.length
+																? index + 1 < featuredArtists.length - 1
+																	? ', '
+																	: ' & '
+																: ''
+														}`
+													)
+												)}
+											</span>
+										)}
+									</td>
+									<td>
+										<time datetime={`PT${duration.minute}M${duration.second}S`}>
+											{track.length}
+										</time>
+									</td>
+								</tr>
+							)
+						})}
+					</tbody>
+				</table>
+			)
+		})
+	}
+</section>
+
+<style define:vars={{ table: table }}>
+	table {
+		width: 95%;
+		height: max-content;
+		max-width: 22rem;
+
+		h3 {
+			margin: 0 0 1rem;
+			text-align: left;
+		}
+
+		td {
+			vertical-align: baseline;
+
+			span {
+				display: block;
+				margin-bottom: 0.2em;
+				font-size: 0.8em;
+				font-style: italic;
+				opacity: 0.5;
+			}
+
+			a:hover,
+			a:focus {
+				opacity: 1;
+				color: #354797;
+				outline: none;
+
+				&::after {
+					content: '↬';
+				}
+			}
+		}
+
+		td:nth-of-type(1) {
+			width: 2.5rem;
+			color: var(--table);
+		}
+
+		td:nth-of-type(2) {
+			padding-right: 1rem;
+		}
+
+		td:nth-of-type(3) {
+			color: rgba(0, 0, 0, 0.5);
+			text-align: right;
+		}
+
+		@media screen and (min-width: 600px) {
+			td:nth-of-type(2) {
+				padding-right: 1.5rem;
+			}
+		}
+	}
+</style>

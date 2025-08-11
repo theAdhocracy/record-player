@@ -1,0 +1,243 @@
+---
+import { Sluggify } from '@/utils/Sluggify'
+import { adjustColour } from '@/utils/ColourAdjust'
+import { checkForAuthToken, scrobbleAlbum } from '@/utils/LastFm'
+
+import Vinyl from '@/components/Vinyl.astro'
+import type { RecordAPI } from '@/components/Album.astro'
+// import Error404 from '@components/404/404'
+// import ScrobbleOptions, { Options } from '@components/ScrobbleOptions/ScrobbleOptions'
+import type { GetStaticPaths } from 'astro'
+import type { Track } from '@/components/Album.astro'
+import Layout from '@/layouts/Layout.astro'
+import Tracklist from '@/components/Tracklist.astro'
+import AlbumControls from '@/components/AlbumControls.astro'
+
+export type Side = {
+	side: string
+	tracks: Track[]
+}
+
+// Generate static pages
+export const getStaticPaths = (async () => {
+	const records = await fetch('https://cms.theadhocracy.co.uk/music.json', {
+		method: 'GET',
+		headers: {
+			'content-type': 'application/json',
+			Authorization: `Bearer ${import.meta.env.CRAFT_API_KEY}`
+		}
+	})
+	const response = await records.json()
+
+	return response.data.map((record: RecordAPI) => {
+		return {
+			params: {
+				artist: Sluggify(record.artist[0]),
+				album: record.slug
+			},
+			props: {
+				album: record
+			}
+		}
+	})
+}) satisfies GetStaticPaths
+
+// Fetch & calculate props for each page
+const { album } = Astro.props as {
+	album: RecordAPI
+}
+
+// Work out tracks per side
+let aSide = 1
+if (album.details.vinyl) {
+	aSide = album.tracks.filter((track: Track) => track.side === 'A').length
+}
+
+// Shuffle tracks into sides
+// This takes the original array and creates a new array (array) and then runs through the original array; for each item (track) it looks at the OG array and sees if it contains a new child with a key of track.side (e.g. "A"); if it finds one already exists in the new array, it adds the track information; otherwise it creates it
+const sides: Side[] = []
+album.tracks.map((track: Track) => {
+	// Check whether an array for the current side exists
+	const index = sides.findIndex((item) => item.side === track.side)
+
+	// If no current array is found, create one
+	if (index < 0) {
+		return sides.push({
+			side: track.side,
+			tracks: [{ ...track }]
+		})
+	}
+
+	// Else, add track information to identified array
+	return sides[index].tracks.push({ ...track })
+})
+
+// Set accent colours
+const accent = album.colour === '#000000' ? '#354797' : album.colour
+const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
+---
+
+<Layout class="album-page">
+	<h1>{album.title}</h1>
+	<h2>{album.artist.map((artist: any) => artist)}</h2>
+	<AlbumControls accent={accent} sides={sides} album={album} />
+
+	<Vinyl
+		isRotating={false}
+		cover={album.cover.src}
+		slug={album.slug}
+		trackCount={aSide}
+		colour={album.colour}
+	/>
+
+	<Tracklist sides={sides} album={album} />
+</Layout>
+
+<style is:global define:vars={{ 'shadow-fore': shadow[0], 'shadow-aft': shadow[1], accent: accent }}
+>
+	#album-page {
+		padding: 0 1rem;
+		max-width: 30rem;
+		margin: 0 auto;
+
+		h1 {
+			font-size: 4rem;
+			margin-bottom: 1rem;
+			filter: drop-shadow(-8px -5px var(--shadow-fore)) drop-shadow(8px 5px var(--shadow-aft));
+		}
+
+		svg:not(#artist) {
+			position: fixed;
+			left: 0;
+			bottom: -50vw;
+			width: 100vw;
+			z-index: 1;
+		}
+
+		& > .tracklist {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1rem;
+			margin-bottom: calc(50vw - 130px); /* 130px is min height of footer */
+			margin-top: 2rem;
+			width: 100%;
+		}
+	}
+
+	@media screen and (min-width: 620px) {
+		#album-page {
+			position: relative;
+			overflow: hidden;
+			display: grid;
+			grid-template-columns: 12vh 1fr;
+			grid-template-rows: max-content min-content 1fr;
+			gap: 1rem;
+			max-width: unset;
+			margin: 0;
+
+			h1 {
+				grid-column: 2;
+				grid-row: 1;
+				align-self: start;
+				justify-self: end;
+				max-width: 8em;
+				margin: 0;
+				padding: 2rem 1rem 0;
+				font-size: 7rem;
+				line-height: 0.9;
+				text-align: right;
+			}
+
+			h2 {
+				grid-column: 1;
+				grid-row-start: 2;
+				grid-row-end: 4;
+				margin: 0;
+				padding-block: 0.5rem;
+				font-size: 9vh;
+				writing-mode: vertical-lr;
+				/* align-self: end; */
+			}
+
+			.tracklist {
+				grid-column: 2;
+				margin-bottom: calc(55vw - 130px); /* 130px is min height of footer */
+				place-content: center;
+			}
+		}
+
+		footer {
+			margin-top: 1rem;
+		}
+	}
+
+	@media screen and (min-width: 1000px) {
+		#album-page {
+			h1 {
+				margin-right: 10%;
+			}
+		}
+	}
+
+	@media screen and (min-width: 1200px) {
+		#album-page {
+			grid-template-columns: 15vh 1fr 55vh;
+			padding: 0;
+
+			h1 {
+				min-width: 5.5em;
+				font-size: 8rem;
+				margin-right: 0;
+				padding-right: 0;
+			}
+
+			svg:not(#artist) {
+				position: relative;
+				left: unset;
+				bottom: unset;
+				grid-column: 3;
+				grid-row-start: 1;
+				grid-row-end: 4;
+				width: auto;
+				height: 100vh;
+			}
+
+			.tracklist {
+				margin: 2rem 0 0;
+				justify-content: end;
+				align-content: start;
+			}
+		}
+	}
+
+	@media screen and (min-width: 1350px) {
+		#album-page {
+			svg:not(#artist) {
+				margin-left: 5vh;
+			}
+
+			.tracklist {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 2rem clamp(2rem, 6rem, 10rem);
+				justify-self: end;
+				align-self: start;
+				height: max-content;
+				margin: 2rem 0 0 8vh;
+			}
+		}
+	}
+
+	@media screen and (min-width: 1750px) {
+		#album-page {
+			.tracklist {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(23rem, max-content));
+				justify-content: end;
+				justify-items: end;
+				gap: 5rem;
+				max-width: 80rem;
+			}
+		}
+	}
+</style>

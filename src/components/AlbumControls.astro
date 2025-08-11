@@ -1,0 +1,237 @@
+---
+import ScrobbleOptions from '@/components/ScrobbleOptions.astro'
+
+const { accent, sides, album } = Astro.props
+const spotifyURI = album.spotify?.uri || ''
+---
+
+<div
+	class="controls"
+	data-tracks={JSON.stringify(album.tracks)}
+	data-title={album.title}
+	data-artist={album.artist[0]}
+	data-side-total={sides.length}
+>
+	<button class="btn-scrobble" type="button">Scrobble Album</button>
+	<button class="btn-options" type="button">
+		<span>⚙</span>
+		<span class="sr-only">Scrobble Options</span>
+	</button>
+	{
+		spotifyURI ? (
+			<a href={spotifyURI}>
+				<span>▶️</span> Spotify
+			</a>
+		) : null
+	}
+	<ScrobbleOptions sides={sides} />
+</div>
+
+<script>
+	import { checkForAuthToken, scrobbleAlbum } from '@/utils/LastFm'
+	import type { Track } from './Album.astro'
+	import type { Options } from './ScrobbleOptions.astro'
+
+	// Store authentication token (added as query parameter on redirect from Last.fm)
+	await checkForAuthToken()
+
+	// Get UI elements
+	const scrobbleButton = document.querySelector('.btn-scrobble')
+	const optionsButton = document.querySelector('.btn-options')
+	const controls = document.querySelector('.controls') as HTMLElement
+
+	// Set album details
+	const tracks = JSON.parse(controls?.dataset.tracks || '[]') as Track[]
+	const album = controls?.dataset.title || ''
+	const artist = controls?.dataset.artist || ''
+	const sideTotal = Number(controls?.dataset.sideTotal) || 1
+
+	let options: Options | null = null
+
+	// Scrobble button
+	scrobbleButton?.addEventListener('click', async () => {
+		let hasOptions = false
+
+		// Check whether options are enabled
+		const optionsPanel = document.querySelector('.scrobble-options')
+		if (optionsPanel && !optionsPanel.hasAttribute('data-hidden')) {
+			hasOptions = true
+
+			// Set options from panel
+			options = {
+				hour: (optionsPanel.querySelector('[name="hour"]') as HTMLSelectElement).value,
+				quarter: (optionsPanel.querySelector('[name="quarter"]') as HTMLSelectElement).value,
+				meridian:
+					(optionsPanel.querySelector('[name="meridian"]') as HTMLSelectElement).value === 'am'
+						? 'am'
+						: 'pm',
+				sides: {
+					...Array.from(
+						optionsPanel.querySelectorAll(
+							'input[type="checkbox"]:checked'
+						) as NodeListOf<HTMLInputElement>
+					).reduce(
+						(acc, checkbox) => {
+							acc[checkbox.name.replace('side-', '').toUpperCase()] = true
+							return acc
+						},
+						{} as Record<string, boolean>
+					)
+				},
+				date: (optionsPanel.querySelector('[name="date"]') as HTMLSelectElement).value
+			}
+		}
+
+		// Scrobble the album
+		const hasScrobbled = await scrobbleAlbum(tracks, artist, album, sideTotal, options as Options)
+
+		// After scrobble, update UI state
+		if (hasScrobbled === 'success') {
+			scrobbleButton.classList.add('success')
+			scrobbleButton.innerHTML = '<span>✅</span> Scrobbled'
+		} else if (hasScrobbled === 'error') {
+			scrobbleButton.classList.add('error')
+			scrobbleButton.innerHTML = '<span>☠</span> Failed'
+		} else if (hasScrobbled === 'warn') {
+			scrobbleButton.classList.add('warn')
+			scrobbleButton.innerHTML = '<span>⚠</span> ½ Scrobbled'
+		} else {
+			scrobbleButton.classList.remove('success', 'error', 'warn')
+			scrobbleButton.innerHTML = 'Scrobble Album'
+		}
+	})
+
+	// Toggle options panel
+	optionsButton?.addEventListener('click', () => {
+		const optionsPanel = document.querySelector('.scrobble-options')
+
+		if (optionsPanel) {
+			optionsPanel.toggleAttribute('data-hidden')
+			setPanel(optionsPanel)
+		}
+	})
+
+	// Function: Populate options panel
+	function setPanel(panel: Element) {
+		// Locate date-based options
+		const hourSelect = panel.querySelector('[name="hour"]') as HTMLSelectElement
+		const quarterSelect = panel.querySelector('[name="quarter"]') as HTMLSelectElement
+		const meridianSelect = panel.querySelector('[name="meridian"]') as HTMLSelectElement
+		const dateSelect = panel.querySelector('[name="date"]') as HTMLSelectElement
+
+		// Calculate current date & time values
+		const currentDateTime = new Date()
+
+		const hours = currentDateTime.getHours()
+		const minutes = currentDateTime.getMinutes()
+
+		const twelveHour = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours // convert to 12-hour format
+		const quarter = minutes <= 14 ? 0 : minutes <= 29 ? 15 : minutes <= 44 ? 30 : 45 // nearest quarter hour (round down to avoid future times)
+
+		// Set the values of the selects
+		hourSelect.value = twelveHour.toString()
+		quarterSelect.value = quarter.toString()
+		meridianSelect.value = hours < 12 ? 'am' : 'pm'
+
+		// Calculate the possible date range
+		const oneMonthAgo = new Date(Number(currentDateTime) - 1000 * 60 * 60 * 24 * 28) // converts ms to s, then days, then * 28 for minimum month
+		const dateArray = []
+		const dateToCheck = oneMonthAgo
+		while (dateToCheck <= currentDateTime) {
+			dateArray.push(new Date(dateToCheck))
+			dateToCheck.setUTCDate(dateToCheck.getUTCDate() + 1)
+		}
+		dateArray.reverse() // puts it in most useful order
+
+		// Set date options
+		dateSelect.innerHTML = dateArray
+			.map((date) => {
+				const dateString = date.toDateString()
+				const displayDate = dateString.replace(/ [0-9]{4}$/, '')
+				return `<option value="${dateString}">${displayDate}</option>`
+			})
+			.join('')
+	}
+</script>
+
+<style define:vars={{ accent }}>
+	.controls {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+
+		button,
+		a {
+			block-size: 2rem;
+			max-width: 8rem;
+			align-self: start;
+			justify-self: end;
+			padding: 0.4rem 0.7rem;
+			background-color: var(--accent);
+			border: 2px solid var(--accent);
+			border-radius: 4px;
+			color: #ffffff;
+			line-height: 1;
+			font-size: 0.825rem;
+			cursor: pointer;
+
+			&.success {
+				filter: hue-rotate(235deg) brightness(1.5);
+
+				span {
+					filter: hue-rotate(-235deg); /* reverts emoji colour */
+				}
+			}
+
+			&.error {
+				filter: hue-rotate(125deg) brightness(1.5);
+
+				span {
+					filter: hue-rotate(-125deg); /* reverts emoji colour */
+				}
+			}
+
+			&.warn {
+				filter: hue-rotate(175deg) brightness(2.5);
+
+				span {
+					filter: hue-rotate(-175deg); /* reverts emoji colour */
+				}
+			}
+
+			&:hover {
+				filter: brightness(1.4);
+			}
+
+			span {
+				font-family:
+					'NotoMono-Regular', 'Consolas', 'Unifont', 'Apple Color Emoji', 'Segoe UI Emoji',
+					'NotoColorEmoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiSymbols', monospace;
+			}
+		}
+	}
+
+	@media screen and (min-width: 620px) {
+		.controls {
+			grid-column: 2;
+			grid-row: 2;
+			display: grid;
+			grid-template-columns: 1fr max-content max-content;
+			margin: 2rem 1rem 0;
+			place-self: end;
+			place-content: end;
+		}
+	}
+
+	@media screen and (min-width: 1000px) {
+		.controls {
+			margin-right: 13%;
+		}
+	}
+
+	@media screen and (min-width: 1200px) {
+		.controls {
+			margin-right: 0;
+		}
+	}
+</style>
