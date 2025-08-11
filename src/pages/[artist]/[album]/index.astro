@@ -1,17 +1,15 @@
 ---
 import { Sluggify } from '@/utils/Sluggify'
 import { adjustColour } from '@/utils/ColourAdjust'
-import { checkForAuthToken, scrobbleAlbum } from '@/utils/LastFm'
 
 import Vinyl from '@/components/Vinyl.astro'
 import type { RecordAPI } from '@/components/Album.astro'
-// import Error404 from '@components/404/404'
-// import ScrobbleOptions, { Options } from '@components/ScrobbleOptions/ScrobbleOptions'
 import type { GetStaticPaths } from 'astro'
 import type { Track } from '@/components/Album.astro'
 import Layout from '@/layouts/Layout.astro'
 import Tracklist from '@/components/Tracklist.astro'
 import AlbumControls from '@/components/AlbumControls.astro'
+import { fetchCraftAPI } from '@/utils/CraftAPI'
 
 export type Side = {
 	side: string
@@ -20,16 +18,9 @@ export type Side = {
 
 // Generate static pages
 export const getStaticPaths = (async () => {
-	const records = await fetch('https://cms.theadhocracy.co.uk/music.json', {
-		method: 'GET',
-		headers: {
-			'content-type': 'application/json',
-			Authorization: `Bearer ${import.meta.env.CRAFT_API_KEY}`
-		}
-	})
-	const response = await records.json()
+	const records = await fetchCraftAPI('/music/records')
 
-	return response.data.map((record: RecordAPI) => {
+	return records.map((record: RecordAPI) => {
 		return {
 			params: {
 				artist: Sluggify(record.artist[0]),
@@ -75,6 +66,8 @@ album.tracks.map((track: Track) => {
 // Set accent colours
 const accent = album.colour === '#000000' ? '#354797' : album.colour
 const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
+
+console.log(album)
 ---
 
 <Layout class="album-page">

@@ -3,17 +3,10 @@ import Layout from '@/layouts/Layout.astro'
 import AlbumGrid from '@/components/AlbumGrid.astro'
 import type { RecordAPI } from '@/components/Album.astro'
 import Toggle from '@/components/Toggle.astro'
+import { fetchCraftAPI } from '@/utils/CraftAPI'
 
 // Fetch albums
-const data = await fetch('https://cms.theadhocracy.co.uk/music.json', {
-	method: 'GET',
-	headers: {
-		'content-type': 'application/json',
-		Authorization: `Bearer ${import.meta.env.CRAFT_API_KEY}`
-	}
-})
-const response = await data.json()
-const records = response.data
+const records = await fetchCraftAPI('/music/records')
 
 // Function: date based sorting
 const dateSort = (album1: RecordAPI, album2: RecordAPI) => {
