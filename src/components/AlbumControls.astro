@@ -2,7 +2,7 @@
 import ScrobbleOptions from '@/components/ScrobbleOptions.astro'
 
 const { accent, sides, album } = Astro.props
-const spotifyURI = album.spotify?.uri || ''
+const spotifyURI = album.spotify?.uri ? `spotify:album:${album.spotify.uri}` : ''
 ---
 
 <div

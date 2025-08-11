@@ -4,6 +4,7 @@ import type { RecordAPI } from '@/components/Album.astro'
 import Layout from '@/layouts/Layout.astro'
 import AlbumGrid from '@/components/AlbumGrid.astro'
 import { adjustColour } from '@/utils/ColourAdjust'
+import { fetchCraftAPI } from '@/utils/CraftAPI'
 
 export type ArtistAPI = {
 	id: number
@@ -15,17 +16,10 @@ export type ArtistAPI = {
 
 // Generate static pages
 export const getStaticPaths = (async () => {
-	const artists = await fetch('https://cms.theadhocracy.co.uk/artists.json', {
-		method: 'GET',
-		headers: {
-			'content-type': 'application/json',
-			Authorization: `Bearer ${import.meta.env.CRAFT_API_KEY}`
-		}
-	})
-	const response = await artists.json()
+	const artists = await fetchCraftAPI('/music/artists')
 
 	// Remove artists that don't have albums (featured artists only)
-	const filteredArtists = response.data.filter((artist: any) => artist.albums?.length > 0)
+	const filteredArtists = artists.filter((artist: any) => artist.albums?.length > 0)
 
 	return filteredArtists.map((artist: any) => {
 		return {
