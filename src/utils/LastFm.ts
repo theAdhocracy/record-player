@@ -73,7 +73,9 @@ export const checkForAuthToken = async () => {
 
 		// Store session key
 		const sessionKey = sessionKeyResponse.session.key as string
+		const sessionUser = sessionKeyResponse.session.name as string
 		localStorage.setItem('scrobble_session', sessionKey)
+		localStorage.setItem('scrobble_user', sessionUser) // captured for Craft verification
 
 		// Remove token from URL
 		window.location.search = ''
@@ -110,6 +112,17 @@ export const queryAlbum = async (artist: string, album: string) => {
 	)
 	const albumDetails = await response.json()
 	return albumDetails
+}
+
+// Function: Query a Last.fm user
+export const queryUser = async (user: string) => {
+	const response = await fetch(
+		`https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=theAdhocracy&api_key=${
+			import.meta.env.PUBLIC_LASTFM_API
+		}&format=json`
+	)
+	const userDetails = await response.json()
+	return userDetails
 }
 
 // * MUTATIONS * //
