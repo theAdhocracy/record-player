@@ -117,7 +117,7 @@ export const queryAlbum = async (artist: string, album: string) => {
 // Function: Query a Last.fm user
 export const queryUser = async (user: string) => {
 	const response = await fetch(
-		`https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=theAdhocracy&api_key=${
+		`https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=${user}&api_key=${
 			import.meta.env.PUBLIC_LASTFM_API
 		}&format=json`
 	)

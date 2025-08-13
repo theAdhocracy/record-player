@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				status: 500
+				status: 403
 			}
 		)
 	}
