@@ -1,11 +1,35 @@
+import { fetchCraftAPI } from '@/utils/CraftAPI'
 import type { APIRoute } from 'astro'
 
 export const prerender = false
 
+// Global variable to track the last execution time
+let lastExecutionTime: number | null = null
+
 export const POST: APIRoute = async ({ request }) => {
+	const currentTime = Date.now()
+
+	// Check if the last execution was less than 10 seconds ago (debounce)
+	if (lastExecutionTime && currentTime - lastExecutionTime < 10000) {
+		return new Response(
+			JSON.stringify({
+				message: 'Too many requests. Please wait before trying again.'
+			}),
+			{
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				status: 429
+			}
+		)
+	}
+
+	// Update the last execution time
+	lastExecutionTime = currentTime
+
+	// Extract data from request body
 	const body = await request.json()
-	const count = body.count + 1
-	const id = body.album
+	const uri = body.uri
 
 	// Validate user account
 	const validUser = body.user === import.meta.env.LASTFM_USER
@@ -24,6 +48,27 @@ export const POST: APIRoute = async ({ request }) => {
 		)
 	}
 
+	// Get current play count
+	const recordData = await fetchCraftAPI(`/music/record/${uri}`)
+
+	if (!recordData || !recordData.id) {
+		return new Response(
+			JSON.stringify({
+				message: 'Record not found or invalid.'
+			}),
+			{
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				status: 404
+			}
+		)
+	}
+
+	// Extract data from record
+	const count = recordData.playCount + 1
+	const id = recordData.id
+
 	// GraphQL mutation to increment play count
 	const query = `
 		mutation AddListenCount($id: ID!, $count: Number) {
@@ -39,6 +84,7 @@ export const POST: APIRoute = async ({ request }) => {
 		count
 	}
 
+	// Update database via Craft API
 	try {
 		const response = await fetch(`${import.meta.env.CRAFT_API_URL as string}`, {
 			method: 'POST',
