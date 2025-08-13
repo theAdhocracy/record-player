@@ -1,3 +1,5 @@
+export const prerender = false
+
 import { fetchCraftAPI } from '@/utils/CraftAPI'
 import type { APIRoute } from 'astro'
 
