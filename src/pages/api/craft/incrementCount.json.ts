@@ -1,8 +1,6 @@
 import { fetchCraftAPI } from '@/utils/CraftAPI'
 import type { APIRoute } from 'astro'
 
-export const prerender = false
-
 // Global variable to track the last execution time
 let lastExecutionTime: number | null = null
 
