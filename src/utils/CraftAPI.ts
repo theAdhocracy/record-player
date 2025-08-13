@@ -21,3 +21,26 @@ export const fetchCraftAPI = async (endpoint: string) => {
 
 	return data
 }
+
+// Function: Increments the play count of a record
+export const incrementPlayCount = async (id: number, count: number) => {
+	// Validate session
+	const sessionUser = localStorage.getItem('scrobble_user')
+
+	if (!sessionUser) {
+		return 'Invalid session'
+	}
+
+	// Queries internal server route API to prevent leaking secrets
+	const response = await fetch('/api/craft/incrementCount.json', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ count: count, user: sessionUser, album: id })
+	})
+		.then((res) => res.json())
+		.catch((err) => console.error(err))
+
+	return response
+}
