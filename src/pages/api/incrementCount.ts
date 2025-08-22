@@ -1,6 +1,6 @@
 export const prerender = false
 
-import { fetchCraftAPI } from '@/utils/CraftAPI'
+// import { fetchCraftAPI } from '@/utils/CraftAPI'
 import type { APIRoute } from 'astro'
 
 // Global variable to track the last execution time
@@ -50,25 +50,26 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	// Get current play count
-	const recordData = await fetchCraftAPI(`/music/record/${uri}`)
+	// TODO: re-enable when ready to test with real API
+	const recordData = 1 // await fetchCraftAPI(`/music/record/${uri}`)
 
-	if (!recordData || !recordData.id) {
-		return new Response(
-			JSON.stringify({
-				message: 'Record not found or invalid.'
-			}),
-			{
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				status: 404
-			}
-		)
-	}
+	// if (!recordData || !recordData.id) {
+	// 	return new Response(
+	// 		JSON.stringify({
+	// 			message: 'Record not found or invalid.'
+	// 		}),
+	// 		{
+	// 			headers: {
+	// 				'Content-Type': 'application/json'
+	// 			},
+	// 			status: 404
+	// 		}
+	// 	)
+	// }
 
 	// Extract data from record
-	const count = recordData.playCount + 1
-	const id = recordData.id
+	const count = 3 //recordData.playCount + 1
+	const id = 309989 // recordData.id
 
 	// GraphQL mutation to increment play count
 	const query = `
