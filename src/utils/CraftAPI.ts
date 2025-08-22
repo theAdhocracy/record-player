@@ -32,7 +32,7 @@ export const incrementPlayCount = async (uri: string) => {
 	}
 
 	// Queries internal server route API to prevent leaking secrets
-	const response = await fetch('/api/craft/incrementCount.json', {
+	const response = await fetch('/api/incrementCount.json', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
