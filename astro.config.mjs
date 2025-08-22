@@ -12,5 +12,6 @@ if (process.argv[3] === '--node' || process.argv[4] === '--node') {
 
 // https://astro.build/config
 export default defineConfig({
-	adapter: adapter
+	adapter: adapter,
+	output: 'static'
 })

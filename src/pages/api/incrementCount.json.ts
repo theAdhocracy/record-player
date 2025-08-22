@@ -7,6 +7,7 @@ import type { APIRoute } from 'astro'
 let lastExecutionTime: number | null = null
 
 export const POST: APIRoute = async ({ request }) => {
+	console.log('API route /api/incrementCount called') // TODO: remove
 	const currentTime = Date.now()
 
 	// Check if the last execution was less than 10 seconds ago (debounce)
