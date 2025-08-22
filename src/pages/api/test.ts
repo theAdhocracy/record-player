@@ -46,8 +46,40 @@ export const POST: APIRoute = async ({ request }) => {
 		)
 	}
 
-	return new Response(JSON.stringify({ message: 'POST received!', received: user }), {
-		status: 200,
-		headers: { 'Content-Type': 'application/json' }
+	// GraphQL mutation to increment play count
+	const query = `
+		mutation AddListenCount($id: ID!, $count: Number) {
+			save_music_record_Entry(id: $id, playCount: $count) {
+				id
+				playCount
+			}
+		}
+	`
+	const variables = {
+		id: 309989,
+		count: 12
+	}
+
+	const response = await fetch(`${import.meta.env.CRAFT_API_URL as string}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${import.meta.env.CRAFT_GQL_TOKEN as string}`
+		},
+		body: JSON.stringify({ query, variables })
 	})
+
+	const result = await response.json()
+
+	return new Response(
+		JSON.stringify({
+			message: 'POST received!',
+			received: user,
+			status: result.data.save_music_record_Entry
+		}),
+		{
+			status: 200,
+			headers: { 'Content-Type': 'application/json' }
+		}
+	)
 }
