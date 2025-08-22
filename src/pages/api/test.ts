@@ -1,5 +1,6 @@
 export const prerender = false
 
+import { fetchCraftAPI } from '@/utils/CraftAPI'
 import type { APIRoute } from 'astro'
 
 // Global variable to track the last execution time
@@ -46,6 +47,28 @@ export const POST: APIRoute = async ({ request }) => {
 		)
 	}
 
+	// Get current play count
+	const uri = 'violets-tale'
+	const recordData = await fetchCraftAPI(`/music/record/${uri}`)
+
+	if (!recordData || !recordData.id) {
+		return new Response(
+			JSON.stringify({
+				message: 'Record not found or invalid.'
+			}),
+			{
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				status: 404
+			}
+		)
+	}
+
+	// Extract data from record
+	const count = recordData.playCount + 1
+	const id = recordData.id
+
 	// GraphQL mutation to increment play count
 	const query = `
 		mutation AddListenCount($id: ID!, $count: Number) {
@@ -56,8 +79,8 @@ export const POST: APIRoute = async ({ request }) => {
 		}
 	`
 	const variables = {
-		id: 309989,
-		count: 12
+		id,
+		count
 	}
 
 	const response = await fetch(`${import.meta.env.CRAFT_API_URL as string}`, {
