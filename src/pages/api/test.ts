@@ -27,7 +27,26 @@ export const POST: APIRoute = async ({ request }) => {
 	lastExecutionTime = currentTime
 
 	const data = await request.json()
-	return new Response(JSON.stringify({ message: 'POST received!', received: data }), {
+	const user = data.user
+
+	// Validate user account
+	const validUser = user === import.meta.env.LASTFM_USER
+
+	if (!validUser) {
+		return new Response(
+			JSON.stringify({
+				message: 'Invalid user. Access denied.'
+			}),
+			{
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				status: 403
+			}
+		)
+	}
+
+	return new Response(JSON.stringify({ message: 'POST received!', received: user }), {
 		status: 200,
 		headers: { 'Content-Type': 'application/json' }
 	})
