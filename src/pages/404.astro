@@ -7,7 +7,26 @@ import Layout from '@/layouts/Layout.astro'
 	<Loading />
 	<h1>Record Skip: 404</h1>
 	<p>It looks like you've tried to reach a page which doesn't exist, sorry 😔</p>
+	<button id="test-api-btn" type="button">Test API POST</button>
+	<pre id="api-response"></pre>
 </Layout>
+
+<script>
+	const btn = document.getElementById('test-api-btn')
+	const output = document.getElementById('api-response')
+
+	btn?.addEventListener('click', async () => {
+		const res = await fetch('/api/test', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ test: 'hello' })
+		})
+		const data = await res.json()
+		if (output) {
+			output.textContent = JSON.stringify(data, null, 2)
+		}
+	})
+</script>
 
 <style is:global>
 	#error-page {
