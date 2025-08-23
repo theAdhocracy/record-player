@@ -24,7 +24,6 @@ export const fetchCraftAPI = async (endpoint: string) => {
 
 // Function: Increments the play count of a record
 export const incrementPlayCount = async (uri: string) => {
-	console.log('Increment play count called') // TODO: remove
 	// Validate session
 	const sessionUser = localStorage.getItem('scrobble_user')
 
@@ -40,8 +39,6 @@ export const incrementPlayCount = async (uri: string) => {
 		},
 		body: JSON.stringify({ user: sessionUser, uri: uri })
 	})
-		.then((res) => res.json())
-		.catch((err) => console.error(err))
 
 	return response
 }

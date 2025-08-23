@@ -13,18 +13,22 @@ import Layout from '@/layouts/Layout.astro'
 </Layout>
 
 <script>
+	import { incrementPlayCount } from '@/utils/CraftAPI'
+
 	// TODO: remove
 	const btn = document.getElementById('test-api-btn')
 	const output = document.getElementById('api-response')
 
 	btn?.addEventListener('click', async () => {
-		const sessionUser = localStorage.getItem('scrobble_user') || 'Unknown'
+		// const sessionUser = localStorage.getItem('scrobble_user') || 'Unknown'
 
-		const response = await fetch('/api/test', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ user: sessionUser })
-		})
+		// const response = await fetch('/api/test', {
+		// 	method: 'POST',
+		// 	headers: { 'Content-Type': 'application/json' },
+		// 	body: JSON.stringify({ user: sessionUser })
+		// })
+
+		const response = await incrementPlayCount('violets-tale')
 
 		const data = await response.json()
 

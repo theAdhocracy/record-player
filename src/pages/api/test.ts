@@ -27,11 +27,12 @@ export const POST: APIRoute = async ({ request }) => {
 	// Update the last execution time
 	lastExecutionTime = currentTime
 
-	const data = await request.json()
-	const user = data.user
+	// Extract data from request body
+	const body = await request.json()
+	const uri = body.uri
 
 	// Validate user account
-	const validUser = user === import.meta.env.LASTFM_USER
+	const validUser = body.user === import.meta.env.LASTFM_USER
 
 	if (!validUser) {
 		return new Response(
@@ -48,7 +49,6 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	// Get current play count
-	const uri = 'violets-tale'
 	const recordData = await fetchCraftAPI(`/music/record/${uri}`)
 
 	if (!recordData || !recordData.id) {
@@ -97,7 +97,6 @@ export const POST: APIRoute = async ({ request }) => {
 	return new Response(
 		JSON.stringify({
 			message: 'POST received!',
-			received: user,
 			status: result.data.save_music_record_Entry
 		}),
 		{

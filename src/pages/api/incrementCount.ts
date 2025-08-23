@@ -1,13 +1,12 @@
 export const prerender = false
 
-// import { fetchCraftAPI } from '@/utils/CraftAPI'
+import { fetchCraftAPI } from '@/utils/CraftAPI'
 import type { APIRoute } from 'astro'
 
 // Global variable to track the last execution time
 let lastExecutionTime: number | null = null
 
 export const POST: APIRoute = async ({ request }) => {
-	console.log('API route /api/incrementCount called') // TODO: remove
 	const currentTime = Date.now()
 
 	// Check if the last execution was less than 10 seconds ago (debounce)
@@ -50,26 +49,25 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	// Get current play count
-	// TODO: re-enable when ready to test with real API
-	const recordData = 1 // await fetchCraftAPI(`/music/record/${uri}`)
+	const recordData = await fetchCraftAPI(`/music/record/${uri}`)
 
-	// if (!recordData || !recordData.id) {
-	// 	return new Response(
-	// 		JSON.stringify({
-	// 			message: 'Record not found or invalid.'
-	// 		}),
-	// 		{
-	// 			headers: {
-	// 				'Content-Type': 'application/json'
-	// 			},
-	// 			status: 404
-	// 		}
-	// 	)
-	// }
+	if (!recordData || !recordData.id) {
+		return new Response(
+			JSON.stringify({
+				message: 'Record not found or invalid.'
+			}),
+			{
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				status: 404
+			}
+		)
+	}
 
 	// Extract data from record
-	const count = 3 //recordData.playCount + 1
-	const id = 309989 // recordData.id
+	const count = recordData.playCount + 1
+	const id = recordData.id
 
 	// GraphQL mutation to increment play count
 	const query = `
@@ -87,35 +85,24 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	// Update database via Craft API
-	try {
-		const response = await fetch(`${import.meta.env.CRAFT_API_URL as string}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${import.meta.env.CRAFT_GQL_TOKEN as string}`
-			},
-			body: JSON.stringify({ query, variables })
-		})
+	const response = await fetch(`${import.meta.env.CRAFT_API_URL as string}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${import.meta.env.CRAFT_GQL_TOKEN as string}`
+		},
+		body: JSON.stringify({ query, variables })
+	})
 
-		if (!response.ok) {
-			throw new Error(`HTTP error: ${response.status}`)
+	const result = await response.json()
+
+	return new Response(
+		JSON.stringify({
+			result: result.data.save_music_record_Entry
+		}),
+		{
+			status: 200,
+			headers: { 'Content-Type': 'application/json' }
 		}
-
-		const result = await response.json()
-
-		if (result.errors) {
-			console.error('GraphQL errors:', result.errors)
-			throw new Error('Failed to increment play count')
-		}
-
-		return new Response(JSON.stringify(result.data.save_music_record_Entry), {
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			status: 200
-		})
-	} catch (error) {
-		console.error('Error incrementing play count:', error)
-		throw error
-	}
+	)
 }
