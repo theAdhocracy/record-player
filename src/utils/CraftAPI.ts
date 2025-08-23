@@ -28,7 +28,15 @@ export const incrementPlayCount = async (uri: string) => {
 	const sessionUser = localStorage.getItem('scrobble_user')
 
 	if (!sessionUser) {
-		return 'Invalid session'
+		return new Response(
+			JSON.stringify({
+				message: 'Invalid session. Access denied.'
+			}),
+			{
+				status: 403,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		)
 	}
 
 	// Queries internal server route API to prevent leaking secrets

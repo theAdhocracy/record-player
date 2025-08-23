@@ -92,6 +92,7 @@ const spotifyURI = album.spotify?.uri ? `spotify:album:${album.spotify.uri}` : '
 			scrobbleButton.classList.add('success')
 			scrobbleButton.innerHTML = '<span>✅</span> Scrobbled'
 			// Increment play count in database
+			console.log(uri)
 			if (uri) {
 				const res = await incrementPlayCount(uri)
 				console.log(res) // TODO: remove
