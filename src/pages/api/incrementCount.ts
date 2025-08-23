@@ -96,6 +96,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 	const result = await response.json()
 
+	// Return success response
 	return new Response(
 		JSON.stringify({
 			result: result.data.save_music_record_Entry
