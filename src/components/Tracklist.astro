@@ -3,14 +3,11 @@ import type { Side } from '@/pages/[artist]/[album]/index.astro'
 import type { RecordAPI } from './Album.astro'
 import { Sluggify } from '@/utils/Sluggify'
 
-const { sides, album } = Astro.props as {
+const { sides, album, accent } = Astro.props as {
 	sides: Side[]
 	album: RecordAPI
+	accent: string
 }
-
-// Set accent colours
-const accent = album.colour === '#000000' ? '#354797' : album.colour
-const table = accent !== '#000000' ? accent : '#354797'
 ---
 
 <section class="tracklist">
@@ -79,7 +76,7 @@ const table = accent !== '#000000' ? accent : '#354797'
 	}
 </section>
 
-<style define:vars={{ table: table }}>
+<style define:vars={{ accent: accent }}>
 	table {
 		width: 95%;
 		height: max-content;
@@ -115,7 +112,7 @@ const table = accent !== '#000000' ? accent : '#354797'
 
 		td:nth-of-type(1) {
 			width: 2.5rem;
-			color: var(--table);
+			color: var(--accent);
 		}
 
 		td:nth-of-type(2) {
@@ -123,7 +120,7 @@ const table = accent !== '#000000' ? accent : '#354797'
 		}
 
 		td:nth-of-type(3) {
-			color: rgba(0, 0, 0, 0.5);
+			color: #767676;
 			text-align: right;
 		}
 
