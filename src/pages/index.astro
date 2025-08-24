@@ -17,17 +17,19 @@ const dateSort = (album1: RecordAPI, album2: RecordAPI) => {
 
 // Function: alphabetical sorting
 const alphaSort = (album1: RecordAPI, album2: RecordAPI) => {
-	// Remove "the" from artist name
-	const artist1 = album1.artist[0].replace(/^the /i, '')
-	const artist2 = album2.artist[0].replace(/^the /i, '')
+	// Remove "the" from artist name and normalize case
+	const artist1 = album1.artist[0].replace(/^the /i, '').toLowerCase()
+	const artist2 = album2.artist[0].replace(/^the /i, '').toLowerCase()
 
 	// First sort by artist name
 	if (artist1 < artist2) return -1
 	if (artist1 > artist2) return 1
 
-	// Then by album title
-	if (album1.title < album2.title) return -1
-	if (album1.title > album2.title) return 1
+	// Then by album title (also normalize case)
+	const title1 = album1.title.toLowerCase()
+	const title2 = album2.title.toLowerCase()
+	if (title1 < title2) return -1
+	if (title1 > title2) return 1
 
 	// Otherwise it's where it should be
 	return 0
