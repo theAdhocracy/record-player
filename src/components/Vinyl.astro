@@ -1,5 +1,5 @@
 ---
-import { adjustColour } from '@/utils/ColourAdjust'
+import { adjustColour, getSpectrum } from '@/utils/ColourAdjust'
 
 type VinylProps = {
 	cover: string
@@ -29,9 +29,16 @@ const generateGrooves = (start: number, end: number, tracks: number[]) => {
 
 	return grooves
 }
+
+// Determine the colour spectrum of the vinyl
+const vinylSpectrum = getSpectrum(colour)
+
+// Accessible label
+const a11yLabel = `A ${vinylSpectrum} vinyl record, with ${trackCount} bands showing playable tracks, and album art in the center. Record spins when interacted with.`
 ---
 
-<svg class="vinyl" viewBox="0 0 100 100">
+<svg class="vinyl" viewBox="0 0 100 100" aria-label={a11yLabel} role="img">
+	<title>{a11yLabel}</title>
 	<defs>
 		<radialGradient id="inner-gap" cx="0.5" cy="0.5" r="0.7" fx="0.6" fy="0.5">
 			<stop offset="0%" stop-color="white"></stop>
