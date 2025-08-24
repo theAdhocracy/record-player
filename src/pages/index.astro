@@ -65,7 +65,7 @@ const rankedRecords = records.map((album: RecordAPI) => {
 		<a href="https://theadhocracy.co.uk/" class="h-card"> my </a>{' '}
 		music collection.
 	</p>
-	<Toggle />
+	<Toggle title="sort by" options={['a-z', 'date']} id="sort-toggle" checked />
 	<AlbumGrid albums={rankedRecords} loading={true} />
 </Layout>
 
@@ -75,11 +75,19 @@ const rankedRecords = records.map((album: RecordAPI) => {
 	// Set sort order based on localStorage or default to 'date'
 	const sort = localStorage.getItem('sort') || 'date'
 
-	const sortToggleElement = document.querySelector('#sort-toggle') as HTMLInputElement | null
-	if (sortToggleElement) {
-		sortToggleElement.checked = sort === 'date'
+	const sortToggle = document.querySelector('#sort-toggle') as HTMLInputElement | null
+
+	if (sortToggle) {
+		sortToggle.checked = sort === 'date'
 		sortAlbumGrid(sort)
 	}
+
+	// Function: updates sorting preference via toggle
+	sortToggle?.addEventListener('change', () => {
+		const sort = (sortToggle as HTMLInputElement)?.checked ? 'date' : 'alpha'
+		localStorage.setItem('sort', sort)
+		sortAlbumGrid(sort)
+	})
 </script>
 
 <style is:global>
@@ -142,6 +150,10 @@ const rankedRecords = records.map((album: RecordAPI) => {
 					outline: none;
 				}
 			}
+		}
+
+		p + #toggle {
+			margin: 0 auto 1rem;
 		}
 
 		@media screen and (min-width: 500px) {
