@@ -51,6 +51,15 @@ const { class: className } = Astro.props
 		flex-direction: column;
 		min-height: 100vh;
 
+		background-image: repeating-linear-gradient(
+			to bottom,
+			transparent,
+			transparent 3px,
+			rgba(172, 172, 172, 0.01) 3px,
+			rgba(172, 172, 172, 0.01) 6px,
+			transparent 9px
+		);
+
 		main {
 			flex: 1;
 			overflow: hidden;
