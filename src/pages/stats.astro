@@ -1,0 +1,138 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import AlbumGrid from '@/components/AlbumGrid.astro'
+import type { RecordAPI } from '@/components/Album.astro'
+import Toggle from '@/components/Toggle.astro'
+import { fetchCraftAPI } from '@/utils/CraftAPI'
+import { queryTopAlbums } from '@/utils/LastFm'
+import TopAlbums from '@/components/stats/TopAlbums.astro'
+
+// Fetch top albums
+const topAlbumsAllTime = await queryTopAlbums('theAdhocracy', 'overall', 15)
+const topAlbumsYear = await queryTopAlbums('theAdhocracy', '12month', 15)
+---
+
+<Layout class="stats-page">
+	<header>
+		<h1>Musical Notes</h1>
+		<p>
+			A collection of stats and data about
+			<a href="https://theadhocracy.co.uk/" class="h-card"> my</a>
+			music listening habits.
+		</p>
+	</header>
+	<section id="album-stats">
+		<header class="togglable">
+			<h2>Top Albums</h2>
+			<Toggle title="time span" options={['all time', '12 months']} id="album-toggle" />
+		</header>
+		<TopAlbums albums={topAlbumsAllTime} />
+		<TopAlbums albums={topAlbumsYear} minRange={500} hidden />
+	</section>
+</Layout>
+
+<script>
+	// Get chart toggles
+	const albumToggle = document.querySelector('#album-toggle') as HTMLInputElement | null
+
+	// Function: Change which album chart is visible
+	if (albumToggle) {
+		// Get album charts
+		const allTimeAlbums = document.querySelector(
+			'.top-album:nth-of-type(1)'
+		) as HTMLOListElement | null
+		const yearAlbums = document.querySelector(
+			'.top-album:nth-of-type(2)'
+		) as HTMLOListElement | null
+
+		// Set event listener for toggle
+		albumToggle?.addEventListener('change', () => {
+			// Invert visible chart
+			allTimeAlbums?.classList.toggle('hidden')
+			yearAlbums?.classList.toggle('hidden')
+		})
+	}
+</script>
+
+<style is:global>
+	#stats-page {
+		max-width: 110rem;
+		margin: 0 auto;
+		padding: 0 1rem;
+
+		header {
+			grid-column: 1 / -1;
+			text-align: center;
+
+			dfn,
+			span.dfn {
+				color: #354797;
+			}
+
+			span.dfn {
+				display: block;
+				margin-block-end: 1rem;
+			}
+
+			h1 {
+				margin-block-end: 3rem;
+				font-size: 5rem;
+				line-height: 0.85;
+
+				span {
+					display: block;
+					margin-block-end: 0.2em;
+					font-size: 0.35em;
+					text-transform: lowercase;
+					font-weight: 400;
+					font-style: italic;
+					color: #929292;
+				}
+			}
+
+			p {
+				margin: 1rem auto 3rem;
+				max-width: 70ch;
+
+				&:last-of-type {
+					margin-block-end: 2rem;
+				}
+
+				a {
+					font-weight: bold;
+					text-underline-position: auto;
+					text-decoration-line: underline;
+					text-decoration-color: #354797;
+					text-decoration-thickness: 3px;
+
+					:hover,
+					:focus {
+						color: #354797;
+						text-decoration-color: #000000;
+						outline: none;
+					}
+				}
+			}
+		}
+
+		h2 {
+			--shadow-fore: #d3eaef;
+			--shadow-aft: #f5c79f;
+
+			margin: 0;
+			font-size: 3rem;
+			filter: drop-shadow(-8px -5px var(--shadow-fore)) drop-shadow(8px 5px var(--shadow-aft));
+		}
+
+		.togglable {
+			display: flex;
+			flex-wrap: wrap;
+			place-content: space-between;
+			margin-block: 3rem;
+		}
+
+		@media screen and (min-width: 500px) {
+			padding: 0 5rem;
+		}
+	}
+</style>
