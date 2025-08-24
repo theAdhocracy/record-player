@@ -148,6 +148,10 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 				padding-block: 0.5rem;
 				font-size: 9vh;
 				writing-mode: vertical-lr;
+				filter: drop-shadow(-8px -5px var(--shadow-fore)) drop-shadow(8px 5px var(--shadow-aft));
+				place-self: end;
+				width: 100%;
+				white-space: nowrap;
 			}
 
 			.tracklist {

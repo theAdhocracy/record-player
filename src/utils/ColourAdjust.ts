@@ -139,9 +139,9 @@ export function getSpectrum(hex: string): string {
 
 	const h = hsl.h
 
-	if (h >= 0 && h < 30) return 'red'
-	if (h >= 30 && h < 60) return 'orange'
-	if (h >= 60 && h < 90) return 'yellow'
+	if (h >= 0 && h < 25) return 'red'
+	if (h >= 25 && h < 50) return 'orange'
+	if (h >= 50 && h < 90) return 'yellow'
 	if (h >= 90 && h < 150) return 'green'
 	if (h >= 150 && h < 210) return 'cyan'
 	if (h >= 210 && h < 270) return 'blue'
