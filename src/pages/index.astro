@@ -99,14 +99,19 @@ const rankedRecords = records.map((album: RecordAPI) => {
 			color: #354797;
 		}
 
+		span.dfn {
+			display: block;
+			margin-block-end: 1rem;
+		}
+
 		h1 {
-			margin-bottom: 3rem;
+			margin-block-end: 3rem;
 			font-size: 5rem;
 			line-height: 0.85;
 
 			span {
 				display: block;
-				margin-bottom: 0.2em;
+				margin-block-end: 0.2em;
 				font-size: 0.35em;
 				text-transform: lowercase;
 				font-weight: 400;
@@ -116,10 +121,11 @@ const rankedRecords = records.map((album: RecordAPI) => {
 		}
 
 		p {
-			margin: 1rem 0 3rem;
+			margin: 1rem auto 3rem;
+			max-width: 70ch;
 
-			:last-of-type {
-				margin-bottom: 2rem;
+			&:last-of-type {
+				margin-block-end: 2rem;
 			}
 
 			a {

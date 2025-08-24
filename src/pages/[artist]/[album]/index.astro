@@ -99,7 +99,7 @@ const shadow = isLight
 
 		h1 {
 			font-size: 4rem;
-			margin-bottom: 1rem;
+			margin-block-end: 1rem;
 			filter: drop-shadow(-8px -5px var(--shadow-fore)) drop-shadow(8px 5px var(--shadow-aft));
 		}
 
@@ -115,8 +115,8 @@ const shadow = isLight
 			display: flex;
 			flex-wrap: wrap;
 			gap: 2rem 1rem;
-			margin-bottom: calc(50vw - 130px); /* 130px is min height of footer */
-			margin-top: 2rem;
+			margin-block-end: calc(50vw - 130px); /* 130px is min height of footer */
+			margin-block-start: 2rem;
 			width: 100%;
 		}
 	}
@@ -161,20 +161,20 @@ const shadow = isLight
 
 			.tracklist {
 				grid-column: 2;
-				margin-bottom: calc(55vw - 130px); /* 130px is min height of footer */
+				margin-block-end: calc(55vw - 130px); /* 130px is min height of footer */
 				place-content: center;
 			}
 		}
 
 		footer {
-			margin-top: 1rem;
+			margin-block-start: 1rem;
 		}
 	}
 
 	@media screen and (min-width: 1000px) {
 		#album-page {
 			h1 {
-				margin-right: 10%;
+				margin-inline-end: 10%;
 			}
 		}
 	}
@@ -187,8 +187,8 @@ const shadow = isLight
 			h1 {
 				min-width: 5.5em;
 				font-size: 8rem;
-				margin-right: 0;
-				padding-right: 0;
+				margin-inline-end: 0;
+				padding-inline-end: 0;
 			}
 
 			svg:not(#artist) {
@@ -213,7 +213,7 @@ const shadow = isLight
 	@media screen and (min-width: 1350px) {
 		#album-page {
 			svg:not(#artist) {
-				margin-left: 5vh;
+				margin-inline-start: 5vh;
 			}
 
 			.tracklist {

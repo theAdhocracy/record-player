@@ -92,7 +92,7 @@ const { sides, album, accent } = Astro.props as {
 
 			span {
 				display: block;
-				margin-bottom: 0.2em;
+				margin-block-end: 0.2em;
 				font-size: 0.8em;
 				font-style: italic;
 				opacity: 0.5;
@@ -116,7 +116,7 @@ const { sides, album, accent } = Astro.props as {
 		}
 
 		td:nth-of-type(2) {
-			padding-right: 1rem;
+			padding-inline-end: 1rem;
 		}
 
 		td:nth-of-type(3) {
@@ -126,7 +126,7 @@ const { sides, album, accent } = Astro.props as {
 
 		@media screen and (min-width: 600px) {
 			td:nth-of-type(2) {
-				padding-right: 1.5rem;
+				padding-inline-end: 1.5rem;
 			}
 		}
 	}
