@@ -1,6 +1,6 @@
 ---
 import { Sluggify } from '@/utils/Sluggify'
-import { adjustColour, adjustContrast } from '@/utils/ColourAdjust'
+import { adjustColour, adjustContrast, isLightColour } from '@/utils/ColourAdjust'
 
 import Vinyl from '@/components/Vinyl.astro'
 import type { RecordAPI } from '@/components/Album.astro'
@@ -66,7 +66,12 @@ album.tracks.map((track: Track) => {
 // Set accent colours
 const accent = album.colour === '#000000' ? '#354797' : album.colour
 const a11yAccent = adjustContrast(accent)
-const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
+
+// Set shadow colours
+const isLight = isLightColour(accent)
+const shadow = isLight
+	? [accent, adjustColour(accent, -40)]
+	: [adjustColour(accent, 70), adjustColour(accent, 120)]
 ---
 
 <Layout class="album-page">

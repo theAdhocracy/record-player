@@ -1,5 +1,5 @@
 ---
-import { adjustColour, getSpectrum } from '@/utils/ColourAdjust'
+import { adjustColour, getLuminance, getSpectrum, adjustLuminance } from '@/utils/ColourAdjust'
 
 type VinylProps = {
 	cover: string
@@ -11,9 +11,24 @@ type VinylProps = {
 
 const { cover, slug, trackCount, colour, isRotating = false } = Astro.props as VinylProps
 
+// Handle white records
+let accent = colour
+let lumen = getLuminance(accent)
+const spectrum = getSpectrum(accent)
+if (colour === '#ffffff' || (lumen > 0.75 && spectrum === 'white')) {
+	// Sets a maximum "white" value, so that edges are still distinct
+	// note: this drops the lumen value below 0.8
+	accent = '#e8e8e8'
+	lumen = 0.8
+}
+
 // Groove colours
-const light = adjustColour(colour, 20)
-const lighter = adjustColour(colour, 35)
+const grooveColours =
+	lumen > 0.75
+		? lumen > 0.9
+			? [adjustLuminance(accent, -10), adjustLuminance(accent, 5)] // handle extremely light colours
+			: [adjustLuminance(accent, 5), adjustLuminance(accent, 50)] // handle all other light colours (basically light pastels and yellows)
+		: [adjustColour(accent, 20), adjustColour(accent, 35)]
 
 // Function: takes the start and end points, returns alternating concentric circles as a gradient; tracks value determines which should be black
 const generateGrooves = (start: number, end: number, tracks: number[]) => {
@@ -21,9 +36,11 @@ const generateGrooves = (start: number, end: number, tracks: number[]) => {
 
 	for (let i = start; i <= end; i++) {
 		if (tracks.includes(i)) {
-			grooves.push(`<stop offset="${i}%" stop-color="${colour}"></stop>`)
+			grooves.push(`<stop offset="${i}%" stop-color="${accent}"></stop>`)
 		} else {
-			grooves.push(`<stop offset="${i}%" stop-color="${i % 2 === 0 ? light : lighter}"></stop>`)
+			grooves.push(
+				`<stop offset="${i}%" stop-color="${i % 2 === 0 ? 'var(--groove-dark)' : 'var(--groove-light)'}"></stop>`
+			)
 		}
 	}
 
@@ -37,14 +54,24 @@ const vinylSpectrum = getSpectrum(colour)
 const a11yLabel = `A ${vinylSpectrum} vinyl record, with ${trackCount} bands showing playable tracks, and album art in the center. Record spins when interacted with.`
 ---
 
-<svg class="vinyl" viewBox="0 0 100 100" aria-label={a11yLabel} role="img">
+<svg
+	class="vinyl"
+	viewBox="0 0 100 100"
+	aria-label={a11yLabel}
+	role="img"
+	style={{
+		'--accent': accent,
+		'--groove-dark': grooveColours[0],
+		'--groove-light': grooveColours[1]
+	}}
+>
 	<title>{a11yLabel}</title>
 	<defs>
 		<radialGradient id="inner-gap" cx="0.5" cy="0.5" r="0.7" fx="0.6" fy="0.5">
 			<stop offset="0%" stop-color="white"></stop>
 			<stop offset="50%" stop-color="white"></stop>
 			<stop offset="98%" stop-color="rgba(0,0,0,0.6)"></stop>
-			<stop offset="99%" stop-color={colour}></stop>
+			<stop offset="99%" stop-color={accent}></stop>
 		</radialGradient>
 
 		<radialGradient id={`grooves-${slug}`} cx="0.5" cy="0.5" r="0.7" fx="0.5" fy="0.5">
@@ -64,10 +91,10 @@ const a11yLabel = `A ${vinylSpectrum} vinyl record, with ${trackCount} bands sho
 		</pattern>
 	</defs>
 	<g class={isRotating ? 'platter rotate' : 'platter'}>
-		<circle cx="50" cy="50" r="45" fill={colour}></circle>
+		<circle cx="50" cy="50" r="45" fill={accent}></circle>
 		{/* slug used to create a uid so that multiple can appear on same page */}
 		<circle cx="50" cy="50" r="41" fill={`url(#grooves-${slug})`}></circle>
-		<circle cx="50" cy="50" r="21" fill={colour}></circle>
+		<circle cx="50" cy="50" r="21" fill={accent}></circle>
 		{/* slug used to create a uid so that multiple can appear on same page */}
 		<circle cx="50" cy="50" r="18" fill={`url(#pattern-${slug})`}></circle>
 		<circle cx="50" cy="50" r="4" fill="url(#inner-gap)"></circle>
