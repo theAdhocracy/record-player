@@ -67,7 +67,7 @@ const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 
 <article data-date-rank={record.dateRank} data-alpha-rank={record.alphaRank}>
 	<a class="cover" href={url} id="desktop-cover">
-		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
+		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} loading="lazy" />
 		{
 			record.details.vinyl && (
 				<Vinyl
@@ -80,7 +80,7 @@ const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 		}
 	</a>
 	<div class="cover" id="mobile-cover">
-		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
+		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} loading="lazy" />
 		{
 			record.details.vinyl && (
 				<Vinyl

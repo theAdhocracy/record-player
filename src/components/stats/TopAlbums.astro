@@ -23,7 +23,7 @@ const upperBound = Math.max(minRange, Math.ceil(albums[0]?.playcount / 100) * 10
 			return (
 				<li style={`--percentage: ${(album.playcount / upperBound) * 100}%`}>
 					<p>{counter}</p>
-					<img src={album.image[3]['#text']} alt="" width="100" height="100" />
+					<img src={album.image[3]['#text']} alt="" width="100" height="100" loading="lazy" />
 					<dl>
 						<dt>Album:</dt>
 						<dd>{album.name}</dd>
