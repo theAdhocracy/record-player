@@ -9,6 +9,7 @@ My personal music collection, now in a digital flavour.
   - Will need a smaller version (simplified) for nav?
 - Create CD image
 - Image optimisations (webp)
+- Review accessibility of Toggle (generally) and current usage (specifically)
 
 - ✅ Scrobble button
 - ✅ Display other albums by an artist on the artist page
