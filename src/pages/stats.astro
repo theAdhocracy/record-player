@@ -5,12 +5,40 @@ import Layout from '@/layouts/Layout.astro'
 import Toggle from '@/components/Toggle.astro'
 import TopAlbums from '@/components/stats/TopAlbums.astro'
 import TopArtists from '@/components/stats/TopArtists.astro'
-import { queryTopAlbums, queryTopArtists } from '@/utils/LastFm'
+import {
+	queryRecentTracks,
+	queryTopAlbums,
+	queryTopArtists,
+	queryTrackTotals,
+	queryUser
+} from '@/utils/LastFm'
+import Vinyl from '@/components/Vinyl.astro'
 
 // Check for user cookie (fallback to environment variable)
 const cookies = Astro.request.headers.get('cookie') ?? ''
 const userMatch = cookies.match(/user=([^;]+)/)
 const user = userMatch ? decodeURIComponent(userMatch[1]) : import.meta.env.LASTFM_USER
+
+// Fetch user data
+const userData = await queryUser(user)
+const recentTracks = await queryRecentTracks(user, 4).then((data) => data.track)
+
+// Generate track totals for year graph
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i)
+
+const yearTracks = await Promise.all(
+	years.map(async (year) => ({
+		year: year.toString(),
+		tracks: await queryTrackTotals(user, `${year}-01-01`, `${year}-12-31`)
+	}))
+)
+
+// Calculate largest number of tracks in a year for percentage calculations
+const maxTracks =
+	Math.ceil(
+		Math.max(...yearTracks.map((item) => Number(String(item.tracks).replace(/,/g, '')))) / 1000
+	) * 1000
 
 // Fetch top albums
 const topAlbumsAllTime = await queryTopAlbums(user, 'overall', 15)
@@ -34,6 +62,79 @@ const topArtistsYear = await queryTopArtists(user, '12month', 15)
 			<a href="#artist-stats">[ Top Artists ]</a>
 		</nav>
 	</header>
+
+	<div class="data-grid">
+		<section id="last-fm">
+			<h2>Last.fm Stats</h2>
+			<dl>
+				<dt>Last.fm Profile:</dt>
+				<dd><a href={userData.url}>{userData.name}</a></dd>
+				<dt>Scrobble Count:</dt>
+				<dd>{Number(userData.playcount).toLocaleString()}</dd>
+				<dt>Total Albums:</dt>
+				<dd>{Number(userData.album_count).toLocaleString()}</dd>
+				<dt>Total Artists:</dt>
+				<dd>{Number(userData.artist_count).toLocaleString()}</dd>
+			</dl>
+			<h2>Scrobbles</h2>
+			<ol>
+				{
+					yearTracks.map((item) => {
+						const percentage = (Number(String(item.tracks).replace(/,/g, '')) / maxTracks) * 100
+
+						return (
+							<li style={`--percentage: ${percentage}%`}>
+								<span>{item.year}</span> <span>{item.tracks}</span>
+							</li>
+						)
+					})
+				}
+			</ol>
+		</section>
+		<section id="recent-tracks">
+			<h2>Recently Played</h2>
+			<ol>
+				{
+					recentTracks.map((track: any, index: number) => {
+						// Check if currently playing
+						const nowPlaying = track['@attr']?.nowplaying ? true : false
+						// Note: index is zero-indexed (hence 9 is threshold)
+						const counter = index >= 9 ? index + 1 : `0${index + 1}`
+						if (index === 0) {
+							return (
+								<li>
+									<div>
+										<Vinyl
+											cover={track.image[2]['#text']}
+											slug="now-playing"
+											trackCount={3}
+											colour={'#000000'}
+											isRotating={nowPlaying}
+										/>
+									</div>
+									<dl>
+										<dt>Track:</dt>
+										<dd>{track.name} </dd>
+										<dt>Artist:</dt>
+										<dd>{track.artist['#text']}</dd>
+										<dt>Album:</dt>
+										<dd>{track.album['#text']}</dd>
+									</dl>
+								</li>
+							)
+						}
+						return (
+							<li>
+								<span>{counter}</span> {track.name} — {track.artist['#text']} —{' '}
+								{track.album['#text']}
+							</li>
+						)
+					})
+				}
+			</ol>
+		</section>
+	</div>
+
 	<section id="album-stats">
 		<header class="togglable">
 			<h2>Top Albums</h2>
@@ -42,6 +143,7 @@ const topArtistsYear = await queryTopArtists(user, '12month', 15)
 		<TopAlbums albums={topAlbumsAllTime} />
 		<TopAlbums albums={topAlbumsYear} minRange={500} hidden />
 	</section>
+
 	<section id="artist-stats">
 		<header class="togglable">
 			<h2>Top Artists</h2>
@@ -126,24 +228,6 @@ const topArtistsYear = await queryTopArtists(user, '12month', 15)
 				}
 			}
 
-			a {
-				--underline-color: #354797;
-				--underline-color-focus: #000000;
-
-				font-weight: bold;
-				text-underline-position: auto;
-				text-decoration-line: underline;
-				text-decoration-color: var(--underline-color);
-				text-decoration-thickness: 3px;
-
-				&:hover,
-				&:focus {
-					color: #354797;
-					text-decoration-color: var(--underline-color-focus);
-					outline: none;
-				}
-			}
-
 			nav {
 				display: flex;
 				flex-wrap: wrap;
@@ -155,6 +239,24 @@ const topArtistsYear = await queryTopArtists(user, '12month', 15)
 					--underline-color: #b45a0b;
 					--underline-color-focus: #76b3c1;
 				}
+			}
+		}
+
+		a {
+			--underline-color: #354797;
+			--underline-color-focus: #000000;
+
+			font-weight: bold;
+			text-underline-position: auto;
+			text-decoration-line: underline;
+			text-decoration-color: var(--underline-color);
+			text-decoration-thickness: 3px;
+
+			&:hover,
+			&:focus {
+				color: #354797;
+				text-decoration-color: var(--underline-color-focus);
+				outline: none;
 			}
 		}
 
@@ -181,6 +283,152 @@ const topArtistsYear = await queryTopArtists(user, '12month', 15)
 			flex-wrap: wrap;
 			place-content: space-between;
 			margin-block: 3rem;
+		}
+
+		.data-grid {
+			--grid-col: 18rem;
+
+			container: data-grid / inline-size;
+
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-col)), 1fr));
+			gap: 2rem 3rem;
+			max-width: 60rem;
+			margin-block: 4rem 3rem;
+			margin-inline: auto;
+			padding-inline: clamp(0.25rem, calc(0.25rem + 1vw), 3rem);
+		}
+
+		#last-fm,
+		#recent-tracks {
+			width: 100%;
+			margin-block: 0;
+
+			h2 {
+				font-size: 2rem;
+				text-align: center;
+				margin-block-end: 1rem;
+			}
+
+			dl {
+				display: grid;
+				grid-template-columns: max-content 1fr;
+				gap: 0 1rem;
+				height: max-content;
+				place-self: center;
+				padding-inline: 1rem;
+			}
+
+			dt {
+				text-align: end;
+				color: #757575;
+				font-size: 0.825rem;
+				line-height: 1.75;
+			}
+
+			dd,
+			dd a {
+				--underline-color: #b45a0b;
+				--underline-color-focus: #76b3c1;
+
+				margin: 0;
+				color: #b45a0b;
+				font-weight: 600;
+			}
+		}
+
+		#last-fm {
+			dl {
+				grid-template-columns: 1fr 1fr;
+			}
+
+			dl + h2 {
+				margin-block-start: 2rem;
+			}
+
+			ol {
+				max-width: 22rem;
+				margin-inline: auto;
+				list-style: none;
+				padding: 0;
+
+				li {
+					display: grid;
+					grid-template-columns: max-content 1fr;
+					align-items: center;
+					width: var(--percentage);
+					font-size: 0.825rem;
+					color: #757575;
+
+					span:first-child {
+						display: flex;
+						height: 75%;
+						place-items: center;
+						line-height: 1;
+						margin-inline-end: 1rem;
+						padding-inline-end: 0.5rem;
+						border-inline-end: 1px solid #b45a0b;
+					}
+
+					span:nth-child(2)::after {
+						content: '';
+						display: block;
+						width: 100%;
+						height: 0.5rem;
+						margin-block-start: 0.25rem;
+						background-color: #76b3c1;
+					}
+				}
+
+				li + li {
+					margin-block-start: 0.25rem;
+				}
+
+				@container data-grid (width > 18rem) {
+					padding-inline-start: 3rem;
+				}
+			}
+		}
+
+		#recent-tracks {
+			max-width: 25rem;
+
+			ol {
+				padding: 0;
+				margin: 0;
+				list-style: none;
+			}
+
+			li:first-of-type {
+				display: flex;
+				flex-wrap: wrap;
+				place-content: center;
+
+				div {
+					width: 6rem;
+					max-height: 6rem;
+					place-self: center;
+				}
+			}
+
+			li {
+				padding: 0.5rem;
+				border-block-end: 1px solid #b45a0b;
+
+				span {
+					font-size: 0.825rem;
+					color: #757575;
+					line-height: 1;
+				}
+			}
+
+			li:not(:first-of-type) {
+				display: grid;
+				grid-template-columns: max-content 1fr;
+				gap: 1rem;
+				align-items: center;
+				padding-inline: 1rem;
+			}
 		}
 
 		@media screen and (min-width: 500px) {
