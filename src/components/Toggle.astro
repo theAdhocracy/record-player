@@ -9,7 +9,7 @@ const { options, title, id, checked = false } = Astro.props
 	<span>{options[0]}</span>
 	<input id={id} type="checkbox" checked={checked} autocomplete="off" />
 	<div>
-		<Vinyl cover={''} slug="sort" trackCount={3} colour={'#354797'} />
+		<Vinyl cover={''} slug="sort" trackCount={3} colour={'#354797'} isDecorative />
 	</div>
 	<span>{options[1]}</span>
 </label>
@@ -27,7 +27,7 @@ const { options, title, id, checked = false } = Astro.props
 
 		span {
 			font-style: italic;
-			color: #00000066;
+			color: #757575;
 			transition: color 0.75s ease-in;
 		}
 
