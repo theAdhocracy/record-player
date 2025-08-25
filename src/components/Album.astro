@@ -67,7 +67,7 @@ const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 
 <article data-date-rank={record.dateRank} data-alpha-rank={record.alphaRank}>
 	<a class="cover" href={url} id="desktop-cover">
-		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
+		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} loading="lazy" />
 		{
 			record.details.vinyl && (
 				<Vinyl
@@ -80,7 +80,7 @@ const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 		}
 	</a>
 	<div class="cover" id="mobile-cover">
-		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} />
+		<img src={record.cover.src} alt={`Cover art: ${record.cover.desc}`} loading="lazy" />
 		{
 			record.details.vinyl && (
 				<Vinyl
@@ -101,10 +101,14 @@ const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 	</h2>
 	<h3>
 		{
-			record.artist.map((artist) => {
+			record.artist.map((artist, index) => {
 				const slug = Sluggify(artist)
-
-				return <a href={`/${slug}`}>{artist}</a>
+				return (
+					<>
+						{index > 0 && ' & '}
+						<a href={`/${slug}`}>{artist}</a>
+					</>
+				)
 			})
 		}
 	</h3>
@@ -168,8 +172,8 @@ const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 			padding-inline: 0.6rem;
 		}
 
-		:hover,
-		:focus {
+		&:hover,
+		&:focus {
 			h2 span {
 				display: inline;
 			}

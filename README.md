@@ -4,20 +4,12 @@ My personal music collection, now in a digital flavour.
 
 ## To Do
 
-- Be able to cope with multiple artists per album (Distant Relatives)
 - Generate splatter effect for records
 - Create main header image
   - Will need a smaller version (simplified) for nav?
-- Record needle (?)
-- Desired page
 - Create CD image
-- Add iconography for other tags (next to button?)
-- Image optimisations
-  - Maybe serve webp if able
-- Lazy loading
-- Auto colour contrast record colours
-- Add Last.fm link and anything else relevant to the footer
-- RSS feed
+- Image optimisations (webp)
+- Review accessibility of Toggle (generally) and current usage (specifically)
 
 - ✅ Scrobble button
 - ✅ Display other albums by an artist on the artist page
@@ -31,14 +23,19 @@ My personal music collection, now in a digital flavour.
 - ✅ Fix build to stop unwanted artist pages being rendered (`getStaticPaths`)
 - ✅ Artists pages populate from correct API
 - ✅ All tracks should be scrobbled so min length sent 31 seconds
+- ✅ Auto colour contrast record/accent colours
+- ✅ Handle multiple artists (combo albums)
+- ✅ Integrate Last.fm stats & current playing
+- ✅ Lazy load images
 
 ## Future
 
-- Discogs integration
 - Add awards
   - Top 10 per year (permanent)
   - Top 10 current (updated whenever)
   - Has been top 10 at some point (permanent)
-  - Awards page with rankings and stats
   - Top artists all of the above
-- Shops page
+- Stats
+  - Extract all year data
+  - Add comparison to last year (e.g. top albums shows up and down)
+- Shops data/page

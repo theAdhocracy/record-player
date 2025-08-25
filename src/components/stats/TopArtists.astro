@@ -1,0 +1,117 @@
+---
+const { artists, hidden, minRange = 1000 } = Astro.props
+
+// Graph axis
+const upperBound = Math.max(minRange, Math.ceil(artists[0]?.playcount / 100) * 100)
+---
+
+<ol
+	class:list={['top-artist', hidden && 'hidden']}
+	style={`--axis-upper-bound: ${upperBound}`}
+	role="list"
+>
+	{
+		artists.map((artist: any, index: number) => {
+			// Note: index is zero-indexed (hence 9 is threshold)
+			const counter = index >= 9 ? index + 1 : `0${index + 1}`
+
+			return (
+				<li style={`--percentage: ${(artist.playcount / upperBound) * 100}%`}>
+					<p>{counter}</p>
+					<dl>
+						<dt>Artist:</dt>
+						<dd>{artist.name}</dd>
+					</dl>
+					<p class="total">Played {artist.playcount} times</p>
+				</li>
+			)
+		})
+	}
+</ol>
+
+<style>
+	ol {
+		list-style: decimal;
+		display: flex;
+		gap: 1rem;
+		flex-direction: column;
+		padding: 0;
+		margin: 0;
+		overflow-x: auto;
+	}
+
+	li {
+		display: grid;
+		grid-template-columns: 2rem 20rem 1fr;
+		min-width: 50rem;
+
+		p,
+		img,
+		dt,
+		dl,
+		dd {
+			margin: 0;
+			padding: 0;
+		}
+
+		img {
+			width: 100%;
+			height: auto;
+			aspect-ratio: 1 / 1;
+			padding: 0.25rem;
+		}
+
+		p {
+			height: min-content;
+		}
+
+		& > p:first-child {
+			place-self: center start;
+			border-block: 1px solid #b45a0b;
+			font-size: 0.825rem;
+			color: #757575;
+			line-height: 2;
+		}
+
+		dl {
+			display: grid;
+			grid-template-columns: max-content 1fr;
+			gap: 0 0.5rem;
+			height: 100%;
+			align-self: center;
+			align-items: center;
+			padding-inline: 1rem;
+			border-inline-end: 1px solid #76b3c1;
+		}
+
+		dt {
+			text-align: end;
+			color: #757575;
+			font-size: 0.825rem;
+			line-height: 1.75;
+		}
+
+		dd {
+			color: #b45a0b;
+			font-weight: 600;
+		}
+
+		.total {
+			width: var(--percentage);
+			padding: 0.5rem;
+			white-space: nowrap;
+			align-self: center;
+			color: #757575;
+			font-size: 0.875rem;
+		}
+
+		.total::after {
+			content: '';
+			display: block;
+			width: 100%;
+			height: 0.8rem;
+			margin-block-start: 0.25rem;
+			background-color: #76b3c1;
+		}
+	}
+</style>

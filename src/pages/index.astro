@@ -4,6 +4,7 @@ import AlbumGrid from '@/components/AlbumGrid.astro'
 import type { RecordAPI } from '@/components/Album.astro'
 import Toggle from '@/components/Toggle.astro'
 import { fetchCraftAPI } from '@/utils/CraftAPI'
+import Search from '@/components/Search.astro'
 
 // Fetch albums
 const records = await fetchCraftAPI('/music/records')
@@ -17,17 +18,19 @@ const dateSort = (album1: RecordAPI, album2: RecordAPI) => {
 
 // Function: alphabetical sorting
 const alphaSort = (album1: RecordAPI, album2: RecordAPI) => {
-	// Remove "the" from artist name
-	const artist1 = album1.artist[0].replace(/^the /i, '')
-	const artist2 = album2.artist[0].replace(/^the /i, '')
+	// Remove "the" from artist name and normalize case
+	const artist1 = album1.artist[0].replace(/^the /i, '').toLowerCase()
+	const artist2 = album2.artist[0].replace(/^the /i, '').toLowerCase()
 
 	// First sort by artist name
 	if (artist1 < artist2) return -1
 	if (artist1 > artist2) return 1
 
-	// Then by album title
-	if (album1.title < album2.title) return -1
-	if (album1.title > album2.title) return 1
+	// Then by album title (also normalize case)
+	const title1 = album1.title.toLowerCase()
+	const title2 = album2.title.toLowerCase()
+	if (title1 < title2) return -1
+	if (title1 > title2) return 1
 
 	// Otherwise it's where it should be
 	return 0
@@ -63,7 +66,8 @@ const rankedRecords = records.map((album: RecordAPI) => {
 		<a href="https://theadhocracy.co.uk/" class="h-card"> my </a>{' '}
 		music collection.
 	</p>
-	<Toggle />
+	<Search />
+	<Toggle title="sort by" options={['a-z', 'date']} id="sort-toggle" checked />
 	<AlbumGrid albums={rankedRecords} loading={true} />
 </Layout>
 
@@ -73,11 +77,19 @@ const rankedRecords = records.map((album: RecordAPI) => {
 	// Set sort order based on localStorage or default to 'date'
 	const sort = localStorage.getItem('sort') || 'date'
 
-	const sortToggleElement = document.querySelector('#sort-toggle') as HTMLInputElement | null
-	if (sortToggleElement) {
-		sortToggleElement.checked = sort === 'date'
+	const sortToggle = document.querySelector('#sort-toggle') as HTMLInputElement | null
+
+	if (sortToggle) {
+		sortToggle.checked = sort === 'date'
 		sortAlbumGrid(sort)
 	}
+
+	// Function: updates sorting preference via toggle
+	sortToggle?.addEventListener('change', () => {
+		const sort = (sortToggle as HTMLInputElement)?.checked ? 'date' : 'alpha'
+		localStorage.setItem('sort', sort)
+		sortAlbumGrid(sort)
+	})
 </script>
 
 <style is:global>
@@ -97,14 +109,19 @@ const rankedRecords = records.map((album: RecordAPI) => {
 			color: #354797;
 		}
 
+		span.dfn {
+			display: block;
+			margin-block-end: 1rem;
+		}
+
 		h1 {
-			margin-bottom: 3rem;
+			margin-block-end: 3rem;
 			font-size: 5rem;
 			line-height: 0.85;
 
 			span {
 				display: block;
-				margin-bottom: 0.2em;
+				margin-block-end: 0.2em;
 				font-size: 0.35em;
 				text-transform: lowercase;
 				font-weight: 400;
@@ -114,10 +131,11 @@ const rankedRecords = records.map((album: RecordAPI) => {
 		}
 
 		p {
-			margin: 1rem 0 3rem;
+			margin: 1rem auto 3rem;
+			max-width: 70ch;
 
-			:last-of-type {
-				margin-bottom: 2rem;
+			&:last-of-type {
+				margin-block-end: 4rem;
 			}
 
 			a {
@@ -127,13 +145,17 @@ const rankedRecords = records.map((album: RecordAPI) => {
 				text-decoration-color: #354797;
 				text-decoration-thickness: 3px;
 
-				:hover,
-				:focus {
+				&:hover,
+				&:focus {
 					color: #354797;
 					text-decoration-color: #000000;
 					outline: none;
 				}
 			}
+		}
+
+		#toggle {
+			margin: 1rem auto 1rem;
 		}
 
 		@media screen and (min-width: 500px) {

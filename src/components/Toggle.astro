@@ -1,32 +1,21 @@
 ---
 import Vinyl from '@/components/Vinyl.astro'
+
+const { options, title, id, checked = false } = Astro.props
 ---
 
-<label id="sort" for="sort-toggle">
-	<span>sort by</span>
-	<span>a-z</span>
-	<input id="sort-toggle" type="checkbox" />
+<label id="toggle" for={id}>
+	<span>{title}</span>
+	<span>{options[0]}</span>
+	<input id={id} type="checkbox" checked={checked} autocomplete="off" />
 	<div>
-		<Vinyl cover={''} slug="sort" trackCount={3} colour={'#354797'} />
+		<Vinyl cover={''} slug="sort" trackCount={3} colour={'#354797'} isDecorative />
 	</div>
-	<span>date</span>
+	<span>{options[1]}</span>
 </label>
 
-<script>
-	import { sortAlbumGrid } from '@/utils/SortAlbums'
-
-	const sortToggle = document.querySelector('#sort-toggle')
-
-	// Function: updates sorting preference via toggle
-	sortToggle?.addEventListener('change', () => {
-		const sort = (sortToggle as HTMLInputElement)?.checked ? 'date' : 'alpha'
-		localStorage.setItem('sort', sort)
-		sortAlbumGrid(sort)
-	})
-</script>
-
 <style>
-	#sort {
+	#toggle {
 		--accent: #f16426;
 
 		display: grid;
@@ -34,12 +23,11 @@ import Vinyl from '@/components/Vinyl.astro'
 		width: max-content;
 		place-content: center;
 		place-items: center;
-		margin: 0 auto 1rem;
 		flex-direction: column;
 
 		span {
 			font-style: italic;
-			color: #00000066;
+			color: #757575;
 			transition: color 0.75s ease-in;
 		}
 
@@ -123,7 +111,7 @@ import Vinyl from '@/components/Vinyl.astro'
 	}
 
 	@media (scripting: none) {
-		#sort {
+		#toggle {
 			display: none;
 		}
 	}

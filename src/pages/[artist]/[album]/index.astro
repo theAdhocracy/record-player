@@ -1,6 +1,6 @@
 ---
 import { Sluggify } from '@/utils/Sluggify'
-import { adjustColour } from '@/utils/ColourAdjust'
+import { adjustColour, adjustContrast, isLightColour } from '@/utils/ColourAdjust'
 
 import Vinyl from '@/components/Vinyl.astro'
 import type { RecordAPI } from '@/components/Album.astro'
@@ -65,13 +65,28 @@ album.tracks.map((track: Track) => {
 
 // Set accent colours
 const accent = album.colour === '#000000' ? '#354797' : album.colour
-const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
+const a11yAccent = adjustContrast(accent)
+
+// Set shadow colours
+const isLight = isLightColour(accent)
+const shadow = isLight
+	? [accent, adjustColour(accent, -40)]
+	: [adjustColour(accent, 70), adjustColour(accent, 120)]
 ---
 
 <Layout class="album-page">
 	<h1>{album.title}</h1>
-	<h2>{album.artist.map((artist: any) => artist)}</h2>
-	<AlbumControls accent={accent} sides={sides} album={album} />
+	<h2>
+		{
+			album.artist.map((artist: any, index: number) => (
+				<a href={`/${Sluggify(artist)}`}>
+					{index >= 1 && ' & '}
+					{artist}
+				</a>
+			))
+		}
+	</h2>
+	<AlbumControls accent={a11yAccent} sides={sides} album={album} />
 
 	<Vinyl
 		isRotating={false}
@@ -81,7 +96,7 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 		colour={album.colour}
 	/>
 
-	<Tracklist sides={sides} album={album} />
+	<Tracklist sides={sides} album={album} accent={a11yAccent} />
 </Layout>
 
 <style is:global define:vars={{ 'shadow-fore': shadow[0], 'shadow-aft': shadow[1], accent: accent }}
@@ -93,7 +108,7 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 
 		h1 {
 			font-size: 4rem;
-			margin-bottom: 1rem;
+			margin-block-end: 1rem;
 			filter: drop-shadow(-8px -5px var(--shadow-fore)) drop-shadow(8px 5px var(--shadow-aft));
 		}
 
@@ -108,9 +123,9 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 		& > .tracklist {
 			display: flex;
 			flex-wrap: wrap;
-			gap: 1rem;
-			margin-bottom: calc(50vw - 130px); /* 130px is min height of footer */
-			margin-top: 2rem;
+			gap: 2rem 1rem;
+			margin-block-end: calc(50vw - 130px); /* 130px is min height of footer */
+			margin-block-start: 2rem;
 			width: 100%;
 		}
 	}
@@ -147,25 +162,28 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 				padding-block: 0.5rem;
 				font-size: 9vh;
 				writing-mode: vertical-lr;
-				/* align-self: end; */
+				filter: drop-shadow(-8px -5px var(--shadow-fore)) drop-shadow(8px 5px var(--shadow-aft));
+				place-self: end;
+				width: 100%;
+				white-space: nowrap;
 			}
 
 			.tracklist {
 				grid-column: 2;
-				margin-bottom: calc(55vw - 130px); /* 130px is min height of footer */
+				margin-block-end: calc(55vw - 130px); /* 130px is min height of footer */
 				place-content: center;
 			}
 		}
 
 		footer {
-			margin-top: 1rem;
+			margin-block-start: 1rem;
 		}
 	}
 
 	@media screen and (min-width: 1000px) {
 		#album-page {
 			h1 {
-				margin-right: 10%;
+				margin-inline-end: 10%;
 			}
 		}
 	}
@@ -178,8 +196,8 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 			h1 {
 				min-width: 5.5em;
 				font-size: 8rem;
-				margin-right: 0;
-				padding-right: 0;
+				margin-inline-end: 0;
+				padding-inline-end: 0;
 			}
 
 			svg:not(#artist) {
@@ -204,7 +222,7 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 	@media screen and (min-width: 1350px) {
 		#album-page {
 			svg:not(#artist) {
-				margin-left: 5vh;
+				margin-inline-start: 5vh;
 			}
 
 			.tracklist {

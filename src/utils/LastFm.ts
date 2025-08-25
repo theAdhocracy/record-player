@@ -77,6 +77,9 @@ export const checkForAuthToken = async () => {
 		localStorage.setItem('scrobble_session', sessionKey)
 		localStorage.setItem('scrobble_user', sessionUser) // captured for Craft verification
 
+		// Store session user as a cookie (expires in 30 days)
+		document.cookie = `user=${encodeURIComponent(sessionUser)}; path=/; max-age=${60 * 60 * 24 * 30}`
+
 		// Remove token from URL
 		window.location.search = ''
 	}
@@ -122,7 +125,57 @@ export const queryUser = async (user: string) => {
 		}&format=json`
 	)
 	const userDetails = await response.json()
-	return userDetails
+	return userDetails.user
+}
+
+// Function: Query user's top albums
+export const queryTopAlbums = async (user: string, period: string, limit: number) => {
+	const response = await fetch(
+		`https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=${user}&api_key=${
+			import.meta.env.PUBLIC_LASTFM_API
+		}&period=${period}&limit=${limit}&format=json`
+	)
+	const topAlbums = await response.json()
+	return topAlbums.topalbums.album
+}
+
+// Function: Query user's top artists
+export const queryTopArtists = async (user: string, period: string, limit: number) => {
+	const response = await fetch(
+		`https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=${user}&api_key=${
+			import.meta.env.PUBLIC_LASTFM_API
+		}&period=${period}&limit=${limit}&format=json`
+	)
+	const topArtists = await response.json()
+	return topArtists.topartists.artist
+}
+
+// Function: Query user's recent tracks
+export const queryRecentTracks = async (user: string, limit: number) => {
+	const response = await fetch(
+		`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${user}&api_key=${
+			import.meta.env.PUBLIC_LASTFM_API
+		}&limit=${limit}&format=json`
+	)
+	const recentTracks = await response.json()
+
+	return recentTracks.recenttracks
+}
+
+// Function: Query track totals by duration
+export const queryTrackTotals = async (user: string, start: string, end: string) => {
+	// Convert to UNIX timestamp (seconds)
+	const from = Math.floor(new Date(`${start}T00:00:00Z`).getTime() / 1000)
+	const to = Math.floor(new Date(`${end}T00:00:00Z`).getTime() / 1000)
+
+	const response = await fetch(
+		`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${user}&api_key=${
+			import.meta.env.PUBLIC_LASTFM_API
+		}&limit=1&from=${from}&to=${to}&format=json`
+	)
+	const tracks = await response.json()
+
+	return Number(tracks.recenttracks['@attr'].total).toLocaleString()
 }
 
 // * MUTATIONS * //

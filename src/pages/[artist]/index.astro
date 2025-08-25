@@ -46,11 +46,22 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 
 // Combine albums and featured albums
 const allAlbums = artist.albums.concat(artist.featured)
+
+// Remove duplicates (e.g. collab albums, where each artist both main and featured)
+const uniqueAlbums = new Set()
+const filteredAlbums = allAlbums.filter((album) => {
+	if (uniqueAlbums.has(album.id)) {
+		return false
+	} else {
+		uniqueAlbums.add(album.id)
+		return true
+	}
+})
 ---
 
 <Layout class="artist-page">
 	<h1>{artist.title}</h1>
-	<AlbumGrid albums={allAlbums} />
+	<AlbumGrid albums={filteredAlbums} />
 </Layout>
 
 <style is:global define:vars={{ 'shadow-fore': shadow[0], 'shadow-aft': shadow[1] }}>
@@ -60,8 +71,8 @@ const allAlbums = artist.albums.concat(artist.featured)
 		padding: 0 1rem;
 
 		h1 {
-			margin-bottom: 3rem;
-			margin-top: 3rem;
+			margin-block-end: 3rem;
+			margin-block-start: 3rem;
 			text-align: center;
 			font-size: 4rem;
 			filter: drop-shadow(-8px -5px var(--shadow-fore)) drop-shadow(8px 5px var(--shadow-aft));
@@ -73,7 +84,7 @@ const allAlbums = artist.albums.concat(artist.featured)
 			h1 {
 				font-size: clamp(4rem, 6rem, 8rem);
 				line-height: 0.9;
-				margin-bottom: 6rem;
+				margin-block-end: 6rem;
 			}
 		}
 	}

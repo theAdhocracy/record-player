@@ -23,24 +23,30 @@ export const fetchCraftAPI = async (endpoint: string) => {
 }
 
 // Function: Increments the play count of a record
-export const incrementPlayCount = async (id: number, count: number) => {
+export const incrementPlayCount = async (uri: string) => {
 	// Validate session
 	const sessionUser = localStorage.getItem('scrobble_user')
 
 	if (!sessionUser) {
-		return 'Invalid session'
+		return new Response(
+			JSON.stringify({
+				message: 'Invalid session. Access denied.'
+			}),
+			{
+				status: 403,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		)
 	}
 
 	// Queries internal server route API to prevent leaking secrets
-	const response = await fetch('/api/craft/incrementCount.json', {
+	const response = await fetch('/api/incrementCount', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({ count: count, user: sessionUser, album: id })
+		body: JSON.stringify({ user: sessionUser, uri: uri })
 	})
-		.then((res) => res.json())
-		.catch((err) => console.error(err))
 
 	return response
 }

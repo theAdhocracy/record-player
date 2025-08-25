@@ -11,8 +11,6 @@ const spotifyURI = album.spotify?.uri ? `spotify:album:${album.spotify.uri}` : '
 	data-title={album.title}
 	data-artist={album.artist[0]}
 	data-side-total={sides.length}
-	data-count={album.playCount || 0}
-	data-album-id={album.id}
 >
 	<button class="btn-scrobble" type="button">Scrobble Album</button>
 	<button class="btn-options" type="button">
@@ -26,7 +24,7 @@ const spotifyURI = album.spotify?.uri ? `spotify:album:${album.spotify.uri}` : '
 			</a>
 		) : null
 	}
-	<ScrobbleOptions sides={sides} />
+	<ScrobbleOptions sides={sides} accent={accent} />
 </div>
 
 <script>
@@ -45,11 +43,10 @@ const spotifyURI = album.spotify?.uri ? `spotify:album:${album.spotify.uri}` : '
 
 	// Set album details
 	const tracks = JSON.parse(controls?.dataset.tracks || '[]') as Track[]
-	const albumID = Number(controls?.dataset.albumId) || 0
 	const album = controls?.dataset.title || ''
 	const artist = controls?.dataset.artist || ''
 	const sideTotal = Number(controls?.dataset.sideTotal) || 1
-	const playCount = Number(controls?.dataset.count) || 0
+	const uri = window.location.pathname.split('/').pop() || ''
 
 	let options: Options | null = null
 
@@ -95,8 +92,8 @@ const spotifyURI = album.spotify?.uri ? `spotify:album:${album.spotify.uri}` : '
 			scrobbleButton.classList.add('success')
 			scrobbleButton.innerHTML = '<span>✅</span> Scrobbled'
 			// Increment play count in database
-			if (albumID > 0 && playCount >= 0) {
-				await incrementPlayCount(albumID, playCount)
+			if (uri) {
+				await incrementPlayCount(uri)
 			}
 		} else if (hasScrobbled === 'error') {
 			scrobbleButton.classList.add('error')
@@ -234,13 +231,13 @@ const spotifyURI = album.spotify?.uri ? `spotify:album:${album.spotify.uri}` : '
 
 	@media screen and (min-width: 1000px) {
 		.controls {
-			margin-right: 13%;
+			margin-inline-end: 13%;
 		}
 	}
 
 	@media screen and (min-width: 1200px) {
 		.controls {
-			margin-right: 0;
+			margin-inline-end: 0;
 		}
 	}
 </style>
