@@ -77,6 +77,9 @@ export const checkForAuthToken = async () => {
 		localStorage.setItem('scrobble_session', sessionKey)
 		localStorage.setItem('scrobble_user', sessionUser) // captured for Craft verification
 
+		// Store session user as a cookie (expires in 30 days)
+		document.cookie = `user=${encodeURIComponent(sessionUser)}; path=/; max-age=${60 * 60 * 24 * 30}`
+
 		// Remove token from URL
 		window.location.search = ''
 	}
@@ -123,6 +126,28 @@ export const queryUser = async (user: string) => {
 	)
 	const userDetails = await response.json()
 	return userDetails
+}
+
+// Function: Query user's top albums
+export const queryTopAlbums = async (user: string, period: string, limit: number) => {
+	const response = await fetch(
+		`https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=${user}&api_key=${
+			import.meta.env.PUBLIC_LASTFM_API
+		}&period=${period}&limit=${limit}&format=json`
+	)
+	const topAlbums = await response.json()
+	return topAlbums.topalbums.album
+}
+
+// Function: Query user's top artists
+export const queryTopArtists = async (user: string, period: string, limit: number) => {
+	const response = await fetch(
+		`https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=${user}&api_key=${
+			import.meta.env.PUBLIC_LASTFM_API
+		}&period=${period}&limit=${limit}&format=json`
+	)
+	const topArtists = await response.json()
+	return topArtists.topartists.artist
 }
 
 // * MUTATIONS * //
