@@ -46,11 +46,22 @@ const shadow = [adjustColour(accent, 70), adjustColour(accent, 120)]
 
 // Combine albums and featured albums
 const allAlbums = artist.albums.concat(artist.featured)
+
+// Remove duplicates (e.g. collab albums, where each artist both main and featured)
+const uniqueAlbums = new Set()
+const filteredAlbums = allAlbums.filter((album) => {
+	if (uniqueAlbums.has(album.id)) {
+		return false
+	} else {
+		uniqueAlbums.add(album.id)
+		return true
+	}
+})
 ---
 
 <Layout class="artist-page">
 	<h1>{artist.title}</h1>
-	<AlbumGrid albums={allAlbums} />
+	<AlbumGrid albums={filteredAlbums} />
 </Layout>
 
 <style is:global define:vars={{ 'shadow-fore': shadow[0], 'shadow-aft': shadow[1] }}>

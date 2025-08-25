@@ -101,10 +101,14 @@ const url = `/${Sluggify(record.artist[0])}/${record.slug}`
 	</h2>
 	<h3>
 		{
-			record.artist.map((artist) => {
+			record.artist.map((artist, index) => {
 				const slug = Sluggify(artist)
-
-				return <a href={`/${slug}`}>{artist}</a>
+				return (
+					<>
+						{index > 0 && ' & '}
+						<a href={`/${slug}`}>{artist}</a>
+					</>
+				)
 			})
 		}
 	</h3>
