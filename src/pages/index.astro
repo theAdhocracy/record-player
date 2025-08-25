@@ -4,6 +4,7 @@ import AlbumGrid from '@/components/AlbumGrid.astro'
 import type { RecordAPI } from '@/components/Album.astro'
 import Toggle from '@/components/Toggle.astro'
 import { fetchCraftAPI } from '@/utils/CraftAPI'
+import Search from '@/components/Search.astro'
 
 // Fetch albums
 const records = await fetchCraftAPI('/music/records')
@@ -65,6 +66,7 @@ const rankedRecords = records.map((album: RecordAPI) => {
 		<a href="https://theadhocracy.co.uk/" class="h-card"> my </a>{' '}
 		music collection.
 	</p>
+	<Search />
 	<Toggle title="sort by" options={['a-z', 'date']} id="sort-toggle" checked />
 	<AlbumGrid albums={rankedRecords} loading={true} />
 </Layout>
@@ -133,7 +135,7 @@ const rankedRecords = records.map((album: RecordAPI) => {
 			max-width: 70ch;
 
 			&:last-of-type {
-				margin-block-end: 2rem;
+				margin-block-end: 4rem;
 			}
 
 			a {
@@ -152,8 +154,8 @@ const rankedRecords = records.map((album: RecordAPI) => {
 			}
 		}
 
-		p + #toggle {
-			margin: 0 auto 1rem;
+		#toggle {
+			margin: 1rem auto 1rem;
 		}
 
 		@media screen and (min-width: 500px) {
