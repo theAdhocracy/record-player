@@ -21,7 +21,7 @@ const user = userMatch ? decodeURIComponent(userMatch[1]) : import.meta.env.LAST
 
 // Fetch user data
 const userData = await queryUser(user)
-const recentTracks = await queryRecentTracks(user, 4).then((data) => data.track)
+const recentTracks = await queryRecentTracks(user, 5).then((data) => data.track)
 
 // Generate track totals for year graph
 const currentYear = new Date().getFullYear()
@@ -124,6 +124,12 @@ const topArtistsYear = await queryTopArtists(user, '12month', 15)
 								</li>
 							)
 						}
+
+						// Limit to 5 tracks (note: now playing track is included as an extra if it exists)
+						if (index === 5) {
+							return
+						}
+
 						return (
 							<li>
 								<span>{counter}</span> {track.name} — {track.artist['#text']} —{' '}
