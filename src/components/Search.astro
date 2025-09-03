@@ -7,6 +7,7 @@ const { total } = Astro.props
 		<label for="search">Search Albums</label>
 		<input type="search" id="search" name="search" />
 		<button type="submit" aria-label="Submit">🔍</button>
+		<button type="button" aria-label="Randomise">🎲</button>
 	</form>
 	<p class="sr-only" role="status">{total} results</p>
 </search>
@@ -54,6 +55,34 @@ const { total } = Astro.props
 		if (searchAlert) {
 			searchAlert.textContent = `${visibleAlbums} results`
 		}
+	})
+
+	// Event: randomise album grid order
+	const randomButton = searchBox?.querySelector('button[aria-label="Randomise"]')
+	randomButton?.addEventListener('click', () => {
+		const albumGrid = document.querySelector('.album-grid')
+		const albums = albumGrid?.querySelectorAll('article')
+		if (!albums || !albumGrid) return
+
+		// Set aria-busy attribute
+		albumGrid.setAttribute('aria-busy', 'true')
+
+		// Convert NodeList to array and shuffle
+		const albumsArray = Array.from(albums)
+		for (let i = albumsArray.length - 1; i > 0; i--) {
+			// Fisher-Yates shuffle
+			const j = Math.floor(Math.random() * (i + 1))
+			;[albumsArray[i], albumsArray[j]] = [albumsArray[j], albumsArray[i]]
+		}
+
+		// Clear existing albums and re-append in new order
+		albumGrid.innerHTML = ''
+		albumsArray.forEach((album) => {
+			albumGrid.appendChild(album)
+		})
+
+		// Remove aria-busy attribute
+		albumGrid.removeAttribute('aria-busy')
 	})
 
 	// Event: on page load, check URL for search parameter

@@ -38,6 +38,10 @@ label {
 	box-sizing: border-box;
 }
 
+button {
+	cursor: pointer;
+}
+
 /* Global class for elements that should only be accessible by screenreaders */
 .sr-only {
 	position: absolute;
